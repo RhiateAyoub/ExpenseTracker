@@ -17,10 +17,9 @@
             android:id="@+id/tvInscriptionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/TextTitle"
             android:text="Inscription"
             android:textColor="@color/black"
-            android:textSize="22sp"
-            android:textStyle="bold"
             android:layout_marginBottom="28dp" />
 
         <!-- Container des champs -->
@@ -40,6 +39,7 @@
                     android:id="@+id/etUsername"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
+                    style="@style/TextInputHint"
                     android:hint="Nom d’utilisateur"
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -54,6 +54,7 @@
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
+                    style="@style/TextInputHint"
                     android:hint="Mot de passe"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -68,6 +69,7 @@
                     android:id="@+id/etConfirmPassword"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
+                    style="@style/TextInputHint"
                     android:hint="Confirmer le mot de passe"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -77,8 +79,8 @@
                 android:id="@+id/btnInscrire"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
+                style="@style/ButtonText"
                 android:text="S'inscrire"
-                android:textStyle="bold"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/primary"
                 app:cornerRadius="8dp"
