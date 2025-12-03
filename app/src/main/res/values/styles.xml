@@ -9,4 +9,33 @@
         <item name="boxBackgroundColor">@color/white</item>
         <item name="hintTextColor">@color/gray_dark</item>
     </style>
+
+    <!-- TITRE SEMI BOLD 24sp (Connexion, Inscription, etc.) -->
+    <style name="TextTitle">
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <!-- PLACEHOLDERS MEDIUM 20sp -->
+    <style name="TextInputHint">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/gray_dark</item>
+    </style>
+
+    <!-- TEXTE NORMAL REGULAR (14–16sp) -->
+    <style name="TextBody">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/gray_dark</item>
+    </style>
+
+    <!-- BOUTONS MEDIUM 16sp -->
+    <style name="ButtonText">
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 </resources>
