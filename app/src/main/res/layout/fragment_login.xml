@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_light">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="120dp">
+
+        <!-- Titre -->
+        <TextView
+            android:id="@+id/tvConnexionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connexion"
+            android:textColor="@color/black"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="28dp" />
+
+        <!-- Container des champs -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="32dp">
+
+            <!-- Nom d’utilisateur -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilUsername"
+                style="@style/InputFieldStyle"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:hint="Nom d’utilisateur"
+                    android:inputType="textPersonName" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Mot de passe -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPassword"
+                style="@style/InputFieldStyle"
+                app:endIconMode="password_toggle">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:hint="Mot de passe"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Bouton Se connecter -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSeConnecter"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="Se connecter"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/primary"
+                app:cornerRadius="8dp"
+                android:layout_marginTop="12dp" />
+
+        </LinearLayout>
+
+        <!-- Lignes + Texte centré -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="32dp"
+            android:paddingHorizontal="24dp">
+
+            <!-- Ligne gauche -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="@color/line_gray" />
+
+            <!-- Texte -->
+            <TextView
+                android:id="@+id/tvNoAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:text="Vous n'avez pas de compte? "
+                android:textColor="@color/gray_dark" />
+
+            <!-- Lien S'inscrire -->
+            <TextView
+                android:id="@+id/tvInscrire"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="8dp"
+                android:text="S'inscrire"
+                android:textStyle="bold"
+                android:textColor="@color/primary" />
+
+            <!-- Ligne droite -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="@color/line_gray" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
