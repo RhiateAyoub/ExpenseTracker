@@ -1,0 +1,115 @@
+# ============================
+# Android / Gradle
+# ============================
+
+# Build outputs
+/build/
+*/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local configuration
+/local.properties
+
+# Gradle caches
+.gradle/
+*.gradle.lockfile
+
+# Log files
+*.log
+
+# Generated files
+captures/
+output.json
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+
+# Keystore files (NE JAMAIS PUSHER)
+*.jks
+*.keystore
+
+# Navigation safe args generated files
+**/navigation/*_Args.java
+**/navigation/*_Directions.java
+
+# ============================
+# OS-specific files
+# ============================
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Linux
+*~
+
+# ============================
+# Android-specific cache
+# ============================
+
+# Gradle incremental build cache
+build/
+
+# Local test output
+test-output/
+
+# ============================
+# App-specific generated files
+# ============================
+
+# APKs
+*.apk
+*.ap_
+
+# Dex files
+*.dex
+
+# Java classes
+*.class
+
+# Proguard
+*.map
+
+# ============================
+# Kotlin / Java
+# ============================
+
+# JetBrains IDE config files
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/gradle.xml
+.idea/**/dictionaries
+.idea/**/shelf/
+
+# Static analysis
+.idea/**/codeStyles/
+
+# ============================
+# Android Studio temporary files
+# ============================
+
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/assetWizardSettings.xml
+.idea/navEditor.xml
+.idea/inspectionProfiles/
+
+# ============================
+# Misc
+# ============================
+
+# Firebase keys (si utilisées)
+google-services.json
+GoogleService-Info.plist
+
+# Crashlytics
+crashlytics-build.properties
+
+# Local environment variables
+.env
+.env.*

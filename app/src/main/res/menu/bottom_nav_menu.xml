@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_home"
+        android:title="Accueil"/>
+
+    <item
+        android:id="@+id/expensesFragment"
+        android:icon="@drawable/ic_list"
+        android:title="Dépenses"/>
+
+    <item
+        android:id="@+id/budgetFragment"
+        android:icon="@drawable/ic_wallet"
+        android:title="Budget"/>
+
+    <item
+        android:id="@+id/statisticsFragment"
+        android:icon="@drawable/ic_stats"
+        android:title="Stats"/>
+
+</menu>
