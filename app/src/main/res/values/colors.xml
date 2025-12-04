@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Primary / accents -->
     <color name="primary">#22C55E</color>
     <color name="primary_dark">#16A34A</color>
-    <color name="bg_light">#F5F5F5</color>
-    <color name="black">#000000</color>
+    <color name="primary_green">#16A34A</color>
+
+    <!-- Backgrounds / neutrals -->
+    <color name="bg_light">#F3F3F3</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- Texts -->
     <color name="gray_dark">#6B7280</color>
     <color name="line_gray">#D3D3D3</color>
+
+    <!-- Positive / negative cards -->
+    <color name="green_light">#CFF7E0</color>   <!-- carte positive -->
+    <color name="red_light">#F8D2D2</color>     <!-- carte negative -->
+    <color name="red_strong">#E53935</color>
+
+    <!-- Floating action -->
+    <color name="fab_tint">#FFFFFF</color>
+
+    <!-- any other used colors -->
+    <color name="accent">#22C55E</color>
 </resources>

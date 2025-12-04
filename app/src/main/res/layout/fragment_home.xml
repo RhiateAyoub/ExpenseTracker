@@ -1,6 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/bg_light">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="24dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp">
+
+        <!-- HEADER -->
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bonjour Ayoub 👋"
+            android:textSize="20sp"
+            android:fontFamily="@font/inter_semibold"
+            android:textColor="@color/black"
+            android:layout_marginTop="12dp"
+            android:gravity="center_horizontal"/>
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="29 Novembre 2025"
+            android:textSize="14sp"
+            android:fontFamily="@font/inter_regular"
+            android:textColor="@color/gray_dark"
+            android:layout_marginTop="4dp"
+            android:gravity="center_horizontal"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line_gray"
+            android:layout_marginTop="16dp"/>
+
+        <!-- POSITIVE MESSAGE (visible ou gone selon logique) -->
+        <LinearLayout
+            android:id="@+id/positiveSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:id="@+id/tvPositiveTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bravo !"
+                android:textColor="@color/primary_green"
+                android:textSize="18sp"
+                android:fontFamily="@font/inter_semibold"/>
+
+            <TextView
+                android:id="@+id/tvPositiveMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vous êtes sur la bonne voie ce mois-ci 🎉"
+                android:textColor="@color/primary_green"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/inter_regular"/>
+        </LinearLayout>
+
+        <!-- NEGATIVE MESSAGE (par défaut GONE) -->
+        <LinearLayout
+            android:id="@+id/negativeSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvNegativeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Attention :"
+                android:textColor="@color/red_strong"
+                android:textSize="18sp"
+                android:fontFamily="@font/inter_semibold"/>
+
+            <TextView
+                android:id="@+id/tvNegativeMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vos dépenses dépassent votre budget prévu."
+                android:textColor="@color/red_strong"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/inter_regular"/>
+        </LinearLayout>
+
+        <!-- Includes des cartes -->
+        <include layout="@layout/home_card_expenses_month"/>
+        <include layout="@layout/home_card_expensive_category"/>
+        <include layout="@layout/home_card_balance"/>
+
+        <!-- FloatingActionButton: placer à la fin (si tu veux le positionner flottant, gère-le dans activity ou CoordinatorLayout) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddExpense"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_add"
+            app:tint="@color/fab_tint"
+            app:backgroundTint="@color/primary"/>
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginHorizontal="42dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="3dp"
+    app:cardUseCompatPadding="true">
+
+    <!-- CONTENU ORIGINAL CONSERVÉ 100% -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/card_white">
+
+        <TextView
+            android:id="@+id/tvLabelExpenses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dépenses du mois"
+            android:textSize="14sp"
+            android:fontFamily="@font/inter_medium"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/tvExpensesAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="725 MAD"
+            android:textSize="26sp"
+            android:fontFamily="@font/inter_semibold"
+            android:textColor="@color/black"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvExpensesPercentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="72% du budget mensuel"
+            android:textSize="13sp"
+            android:fontFamily="@font/inter_regular"
+            android:textColor="@color/gray_dark"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

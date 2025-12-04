@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_balance_wrapper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="-8dp"
+    android:layout_marginHorizontal="42dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="3dp"
+    app:cardUseCompatPadding="true">
+
+    <!-- Le fond doit être mis ici, PAS dans la CardView -->
+    <LinearLayout
+        android:id="@+id/balanceCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/card_positive">
+
+        <TextView
+            android:id="@+id/tvLabelBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Solde prévu au fin du mois"
+            android:textSize="14sp"
+            android:fontFamily="@font/inter_medium"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvBalanceAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+200 MAD"
+            android:textSize="26sp"
+            android:fontFamily="@font/inter_semibold"
+            android:textColor="@color/primary_green"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/tvBalancePercentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+20% du budget mensuel"
+            android:textSize="13sp"
+            android:fontFamily="@font/inter_regular"
+            android:textColor="@color/primary_green"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
