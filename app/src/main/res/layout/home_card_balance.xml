@@ -51,3 +51,21 @@
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
+
+    <!--
+    IMPORTANT: In your Java/ViewModel code, you'll need to programmatically change:
+
+    For POSITIVE balance:
+    balanceCard.setBackgroundResource(R.drawable.card_positive);
+    tvBalanceAmount.setTextColor(getResources().getColor(R.color.primary_green));
+    tvBalancePercentage.setTextColor(getResources().getColor(R.color.primary_green));
+    positiveSection.setVisibility(View.VISIBLE);
+    negativeSection.setVisibility(View.GONE);
+
+    For NEGATIVE balance:
+    balanceCard.setBackgroundResource(R.drawable.card_negative);
+    tvBalanceAmount.setTextColor(getResources().getColor(R.color.red_strong));
+    tvBalancePercentage.setTextColor(getResources().getColor(R.color.red_strong));
+    positiveSection.setVisibility(View.GONE);
+    negativeSection.setVisibility(View.VISIBLE);
+    -->
