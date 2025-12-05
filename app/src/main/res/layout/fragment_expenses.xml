@@ -1,6 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- fragment_expenses.xml -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/bg_light">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="32dp"
+            android:paddingBottom="80dp">
+
+            <!-- HEADER SECTION -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp">
+
+                <TextView
+                    android:id="@+id/tvWelcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bonjour Ayoub 👋"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/inter_semibold"
+                    android:textColor="@color/black"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/tvDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="29 Novembre 2025"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/inter_regular"
+                    android:textColor="@color/gray_dark"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <!-- MONTH SELECTOR & TOTAL -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:layout_marginTop="24dp">
+
+                <!-- Previous Month Button -->
+                <ImageButton
+                    android:id="@+id/btnPreviousMonth"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_chevron_left"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Mois précédent"/>
+
+                <!-- Month/Year Picker Button -->
+                <LinearLayout
+                    android:id="@+id/btnMonthPicker"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingVertical="8dp"
+                    android:background="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:id="@+id/tvSelectedMonth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Novembre 2025"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/inter_semibold"
+                        android:textColor="@color/black"/>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_dropdown"
+                        android:layout_marginStart="8dp"
+                        app:tint="@color/black"/>
+                </LinearLayout>
+
+                <!-- Next Month Button -->
+                <ImageButton
+                    android:id="@+id/btnNextMonth"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Mois suivant"/>
+            </LinearLayout>
+
+            <!-- TOTAL EXPENSES FOR MONTH -->
+            <TextView
+                android:id="@+id/tvMonthTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Total: 251 MAD"
+                android:textSize="16sp"
+                android:fontFamily="@font/inter_semibold"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:layout_marginTop="12dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"/>
+
+            <!-- EXPENSES LIST CARD -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="4dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                android:elevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/white">
+
+                    <!-- RecyclerView for expenses list -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvExpenses"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:clipToPadding="false"/>
+
+                    <!-- Empty State (show when no expenses) -->
+                    <LinearLayout
+                        android:id="@+id/emptyState"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="40dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Aucune dépense ce mois-ci"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/inter_medium"
+                            android:textColor="@color/gray_dark"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Appuyez sur + pour ajouter"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/inter_regular"
+                            android:textColor="@color/gray_dark"
+                            android:layout_marginTop="8dp"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Floating Action Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddExpense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="90dp"
+        android:src="@drawable/ic_add"
+        app:tint="@color/white"
+        app:backgroundTint="@color/primary"
+        app:elevation="6dp"
+        app:borderWidth="0dp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
