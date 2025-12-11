@@ -5,11 +5,47 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
+    <!-- Home Fragment -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.expensetracker.ui.home.HomeFragment"
         android:label="Accueil"
         tools:layout="@layout/fragment_home" />
 
-    <!-- autres destinations -->
+    <!-- Expenses Fragment -->
+    <fragment
+        android:id="@+id/expensesFragment"
+        android:name="com.example.expensetracker.ui.expenses.ExpenseFragment"
+        android:label="Dépenses"
+        tools:layout="@layout/fragment_expenses">
+
+        <!-- Action to navigate to Add Expense -->
+        <action
+            android:id="@+id/action_expenses_to_addExpense"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Add Expense Fragment -->
+    <fragment
+        android:id="@+id/addExpenseFragment"
+        android:name="com.example.expensetracker.ui.expenses.AddExpenseFragment"
+        android:label="Ajouter une dépense"
+        tools:layout="@layout/fragment_add_expense" />
+
+    <!-- Budget Fragment (placeholder)
+    <fragment
+        android:id="@+id/budgetFragment"
+        android:name="com.example.expensetracker.ui.budget.BudgetFragment"
+        android:label="Budget" />
+-->
+    <!-- Statistics Fragment (placeholder)
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.example.expensetracker.ui.statistics.StatisticsFragment"
+        android:label="Stats" />
+-->
 </navigation>

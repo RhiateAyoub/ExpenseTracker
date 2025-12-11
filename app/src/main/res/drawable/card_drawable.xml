@@ -16,7 +16,7 @@
 
     <shadow
         android:shadowColor="#1F000000"
-        android:shadowDx="0dp"
-        android:shadowDy="4dp"
-        android:shadowRadius="6dp"/>
+        android:shadowDx="0"
+        android:shadowDy="4"
+        android:shadowRadius="6"/>
 </shape>
