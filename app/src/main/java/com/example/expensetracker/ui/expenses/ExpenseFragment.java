@@ -103,8 +103,7 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
     }
 
     private void showMonthYearPicker() {
-        MonthYearPickerDialog dialog = new MonthYearPickerDialog(
-                requireContext(),
+        MonthYearBottomSheet sheet = new MonthYearBottomSheet(
                 currentMonth.get(Calendar.YEAR),
                 currentMonth.get(Calendar.MONTH),
                 (year, month) -> {
@@ -114,8 +113,7 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
                     loadExpenses();
                 }
         );
-
-        dialog.show();
+        sheet.show(getParentFragmentManager(), "MonthYearPicker");
     }
 
     private void loadExpenses() {
