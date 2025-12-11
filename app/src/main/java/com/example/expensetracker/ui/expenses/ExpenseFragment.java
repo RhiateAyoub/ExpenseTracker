@@ -103,26 +103,17 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
     }
 
     private void showMonthYearPicker() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentMonth.getTime());
-
-        DatePickerDialog dialog = new DatePickerDialog(
+        MonthYearPickerDialog dialog = new MonthYearPickerDialog(
                 requireContext(),
-                (view, year, month, dayOfMonth) -> {
+                currentMonth.get(Calendar.YEAR),
+                currentMonth.get(Calendar.MONTH),
+                (year, month) -> {
                     currentMonth.set(Calendar.YEAR, year);
                     currentMonth.set(Calendar.MONTH, month);
                     updateMonthDisplay();
                     loadExpenses();
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                1
+                }
         );
-
-        // Hide day picker (only show month/year)
-        dialog.getDatePicker().findViewById(
-                getResources().getIdentifier("day", "id", "android")
-        ).setVisibility(View.GONE);
 
         dialog.show();
     }
