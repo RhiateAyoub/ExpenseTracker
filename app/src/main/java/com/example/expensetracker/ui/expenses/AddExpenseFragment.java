@@ -1,12 +1,14 @@
 // AddExpenseFragment.java
 package com.example.expensetracker.ui.expenses;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +31,7 @@ public class AddExpenseFragment extends Fragment {
     private TextInputEditText etDate;
     private TextInputEditText etNote;
     private MaterialButton btnAddExpense;
+    private ImageButton btnBack;
 
     private Calendar selectedDate;
     private CategoryHelper.Category selectedCategory;
@@ -40,6 +43,7 @@ public class AddExpenseFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_expense, container, false);
 
         initViews(view);
+        setupBackButton();
         setupCategoryDropdown();
         setupDatePicker();
         setupAddButton();
@@ -57,6 +61,29 @@ public class AddExpenseFragment extends Fragment {
         etDate = view.findViewById(R.id.etDate);
         etNote = view.findViewById(R.id.etNote);
         btnAddExpense = view.findViewById(R.id.btnAddExpense);
+        btnBack = view.findViewById(R.id.btnBack);
+    }
+
+    private void setupBackButton() {
+        btnBack.setOnClickListener(v -> {
+            // Check if user has entered any data
+            boolean hasData = !etPrice.getText().toString().isEmpty() ||
+                    !etNote.getText().toString().isEmpty();
+
+            if (hasData) {
+                // Show confirmation dialog
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Abandonner les modifications ?")
+                        .setMessage("Les données non enregistrées seront perdues")
+                        .setPositiveButton("Abandonner", (dialog, which) -> {
+                            Navigation.findNavController(v).navigateUp();
+                        })
+                        .setNegativeButton("Annuler", null)
+                        .show();
+            } else {
+                Navigation.findNavController(v).navigateUp();
+            }
+        });
     }
 
     private void setupCategoryDropdown() {

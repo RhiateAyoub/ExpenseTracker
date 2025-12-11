@@ -10,8 +10,8 @@ import androidx.fragment.app.Fragment;
 
 import com.example.expensetracker.R; // <-- IMPORTANT : import de R
 
-// HomeFragment.java - Add this method to your HomeFragment class
-
+import androidx.navigation.Navigation;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -39,6 +39,12 @@ public class HomeFragment extends Fragment {
         // Example: Update balance state based on your data
         double predictedBalance = -100; // This would come from your ViewModel
         updateBalanceState(predictedBalance);
+
+        // Setup FAB to navigate to Add Expense
+        FloatingActionButton fabAddExpense = view.findViewById(R.id.fabAddExpense);
+        fabAddExpense.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.addExpenseFragment);
+        });
 
         return view;
     }
