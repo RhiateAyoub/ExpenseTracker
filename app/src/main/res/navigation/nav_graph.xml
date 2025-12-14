@@ -36,12 +36,13 @@
         android:label="Ajouter une dépense"
         tools:layout="@layout/fragment_add_expense" />
 
-    <!-- Budget Fragment (placeholder)
+    <!-- Budget Fragment (placeholder) -->
     <fragment
         android:id="@+id/budgetFragment"
         android:name="com.example.expensetracker.ui.budget.BudgetFragment"
-        android:label="Budget" />
--->
+        android:label="Budget"
+        tools:layout="@layout/fragment_budget" />
+
     <!-- Statistics Fragment (placeholder)
     <fragment
         android:id="@+id/statisticsFragment"

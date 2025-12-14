@@ -58,6 +58,7 @@
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:paddingTop="24dp"
+                android:paddingBottom="24dp"
                 android:clipToPadding="false"
                 android:clipChildren="false">
 
@@ -234,6 +235,26 @@
                                 android:fontFamily="@font/inter_semibold"
                                 android:textColor="@color/black"/>
 
+                        </LinearLayout>
+
+                        <!-- Display Mode -->
+                        <LinearLayout
+                            android:id="@+id/displayMode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/tvBudgetAmount"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="1000 MAD"
+                                android:textSize="28sp"
+                                android:fontFamily="@font/inter_semibold"
+                                android:textColor="@color/black"/>
+
                             <TextView
                                 android:id="@+id/btnModifier"
                                 android:layout_width="wrap_content"
@@ -248,22 +269,6 @@
                                 android:background="?attr/selectableItemBackground"/>
                         </LinearLayout>
 
-                        <!-- Display Mode -->
-                        <LinearLayout
-                            android:id="@+id/displayMode"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/tvBudgetAmount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="1000 MAD"
-                                android:textSize="28sp"
-                                android:fontFamily="@font/inter_semibold"
-                                android:textColor="@color/black"/>
-                        </LinearLayout>
 
                         <!-- Edit Mode (hidden by default) -->
                         <LinearLayout

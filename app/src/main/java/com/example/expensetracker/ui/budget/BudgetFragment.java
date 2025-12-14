@@ -1,10 +1,12 @@
 // BudgetFragment.java
 package com.example.expensetracker.ui.budget;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -75,6 +77,9 @@ public class BudgetFragment extends Fragment {
             btnModifier.setVisibility(View.GONE);
             etBudgetInput.setText(String.valueOf((int) currentBudget));
             etBudgetInput.requestFocus();
+
+            // Show keyboard
+            showKeyboard(etBudgetInput);
         });
 
         // Save button - save and switch to display mode
@@ -91,6 +96,9 @@ public class BudgetFragment extends Fragment {
                     Toast.makeText(requireContext(), "Le budget doit être positif", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                // Hide keyboard first
+                hideKeyboard();
 
                 // TODO: Save to database
                 // budgetViewModel.updateBudget(currentBudget);
@@ -109,6 +117,9 @@ public class BudgetFragment extends Fragment {
 
         // Cancel button - switch back to display mode
         btnAnnuler.setOnClickListener(v -> {
+            // Hide keyboard
+            hideKeyboard();
+
             displayMode.setVisibility(View.VISIBLE);
             editMode.setVisibility(View.GONE);
             btnModifier.setVisibility(View.VISIBLE);
@@ -151,6 +162,21 @@ public class BudgetFragment extends Fragment {
             tvBalanceValue.setTextColor(getResources().getColor(R.color.primary_green, null));
         } else {
             tvBalanceValue.setTextColor(getResources().getColor(R.color.red_strong, null));
+        }
+    }
+
+    private void hideKeyboard() {
+        View view = requireActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    private void showKeyboard(View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 
