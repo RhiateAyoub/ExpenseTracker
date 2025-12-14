@@ -127,8 +127,8 @@ public class BudgetFragment extends Fragment {
 
         // Month details button (optional - navigate somewhere)
         btnMonthDetails.setOnClickListener(v -> {
-            // TODO: Navigate to detailed monthly view or do nothing
-            Toast.makeText(requireContext(), "Détails du mois", Toast.LENGTH_SHORT).show();
+            // Navigate to Monthly History
+            Navigation.findNavController(v).navigate(R.id.action_budget_to_monthlyHistory);
         });
 
         // FAB - navigate to add expense

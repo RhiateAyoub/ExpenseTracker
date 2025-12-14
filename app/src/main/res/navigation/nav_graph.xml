@@ -36,12 +36,25 @@
         android:label="Ajouter une dépense"
         tools:layout="@layout/fragment_add_expense" />
 
-    <!-- Budget Fragment (placeholder) -->
+    <!-- Monthly History Fragment -->
+    <fragment
+        android:id="@+id/monthlyHistoryFragment"
+        android:name="com.example.expensetracker.ui.budget.MonthlyHistoryFragment"
+        android:label="Historique mensuel"
+        tools:layout="@layout/fragment_monthly_history" />
+
+    <!-- Update Budget Fragment to add action -->
     <fragment
         android:id="@+id/budgetFragment"
         android:name="com.example.expensetracker.ui.budget.BudgetFragment"
         android:label="Budget"
-        tools:layout="@layout/fragment_budget" />
+        tools:layout="@layout/fragment_budget">
+
+        <!-- Add this action -->
+        <action
+            android:id="@+id/action_budget_to_monthlyHistory"
+            app:destination="@id/monthlyHistoryFragment" />
+    </fragment>
 
     <!-- Statistics Fragment (placeholder)
     <fragment
