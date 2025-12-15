@@ -133,7 +133,7 @@ public class BudgetFragment extends Fragment {
 
         // FAB - navigate to add expense
         fabAddExpense.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.addExpenseFragment);
+            Navigation.findNavController(v).navigate(R.id.action_budget_to_addExpense);
         });
     }
 

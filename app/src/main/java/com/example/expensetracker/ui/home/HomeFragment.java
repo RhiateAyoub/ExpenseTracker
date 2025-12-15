@@ -43,7 +43,7 @@ public class HomeFragment extends Fragment {
         // Setup FAB to navigate to Add Expense
         FloatingActionButton fabAddExpense = view.findViewById(R.id.fabAddExpense);
         fabAddExpense.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.addExpenseFragment);
+            Navigation.findNavController(v).navigate(R.id.action_home_to_addExpense);
         });
 
         return view;

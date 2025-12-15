@@ -31,6 +31,13 @@
     <color name="text_input_stroke_default">#D3D3D3</color>
     <color name="text_input_stroke_focused">#22C55E</color>
 
+    <!-- Category Chart Colors (theme-matched) -->
+    <color name="chart_green">#22C55E</color>      <!-- Primary green -->
+    <color name="chart_blue">#3B82F6</color>       <!-- Blue -->
+    <color name="chart_teal">#10B981</color>       <!-- Teal/Emerald -->
+    <color name="chart_purple">#8B5CF6</color>     <!-- Purple/Violet -->
+    <color name="chart_gray">#6B7280</color>       <!-- Gray for "Autre" -->
+
     <!-- any other used colors -->
     <color name="accent">#22C55E</color>
 </resources>

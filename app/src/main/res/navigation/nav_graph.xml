@@ -10,7 +10,17 @@
         android:id="@+id/homeFragment"
         android:name="com.example.expensetracker.ui.home.HomeFragment"
         android:label="Accueil"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+
+        <!-- Add action to navigate to Add Expense -->
+        <action
+            android:id="@+id/action_home_to_addExpense"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <!-- Expenses Fragment -->
     <fragment
@@ -43,23 +53,47 @@
         android:label="Historique mensuel"
         tools:layout="@layout/fragment_monthly_history" />
 
-    <!-- Update Budget Fragment to add action -->
+    <!-- Budget Fragment -->
     <fragment
         android:id="@+id/budgetFragment"
         android:name="com.example.expensetracker.ui.budget.BudgetFragment"
         android:label="Budget"
         tools:layout="@layout/fragment_budget">
 
-        <!-- Add this action -->
+        <!-- Action to Monthly History -->
         <action
             android:id="@+id/action_budget_to_monthlyHistory"
-            app:destination="@id/monthlyHistoryFragment" />
+            app:destination="@id/monthlyHistoryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <!-- Add action to navigate to Add Expense -->
+        <action
+            android:id="@+id/action_budget_to_addExpense"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
-    <!-- Statistics Fragment (placeholder)
+    <!-- Statistics Fragment -->
     <fragment
         android:id="@+id/statisticsFragment"
         android:name="com.example.expensetracker.ui.statistics.StatisticsFragment"
-        android:label="Stats" />
--->
+        android:label="Stats"
+        tools:layout="@layout/fragment_statistics">
+
+        <!-- Add action to navigate to Add Expense -->
+        <action
+            android:id="@+id/action_statistics_to_addExpense"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
 </navigation>

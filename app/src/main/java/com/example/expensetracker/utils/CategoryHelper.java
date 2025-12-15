@@ -33,6 +33,11 @@ public class CategoryHelper {
         public int getIconResId() {
             return iconResId;
         }
+
+        @Override
+        public String toString() {
+            return name; // This is what gets displayed when selected
+        }
     }
 
     // Get all available categories
