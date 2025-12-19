@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.expensetracker.R;
+import com.example.expensetracker.data.entity.User;
 import com.example.expensetracker.utils.SessionManager;
 
 public class RegisterFragment extends Fragment {
@@ -49,10 +50,13 @@ public class RegisterFragment extends Fragment {
                 )
         );
 
-        viewModel.authSuccess.observe(getViewLifecycleOwner(), userId -> {
-            sessionManager.saveUserId(userId);
-            NavHostFragment.findNavController(this)
-                    .navigate(R.id.homeFragment);
+        // Updated observer to handle the User object
+        viewModel.authSuccess.observe(getViewLifecycleOwner(), user -> {
+            if (user != null) {
+                sessionManager.createLoginSession(user.getId(), user.getUsername(), user.getFullName());
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.homeFragment);
+            }
         });
 
         viewModel.error.observe(getViewLifecycleOwner(), msg ->

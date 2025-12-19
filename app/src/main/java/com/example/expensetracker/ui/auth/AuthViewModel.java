@@ -1,6 +1,7 @@
 package com.example.expensetracker.ui.auth;
 
 import android.app.Application;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -8,40 +9,40 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.expensetracker.data.entity.User;
 import com.example.expensetracker.data.repository.UserRepository;
+import com.example.expensetracker.utils.PasswordUtil;
 
 public class AuthViewModel extends AndroidViewModel {
 
     private final UserRepository repository;
 
-    public MutableLiveData<Integer> authSuccess = new MutableLiveData<>();
+    // LiveData now holds the full User object on success
+    public MutableLiveData<User> authSuccess = new MutableLiveData<>();
     public MutableLiveData<String> error = new MutableLiveData<>();
 
     public AuthViewModel(@NonNull Application application) {
         super(application);
-        repository = new UserRepository(application);
+        repository = new UserRepository(application.getApplicationContext());
     }
 
     // ==================== REGISTER ====================
 
     public void register(String username, String password, String fullName) {
-        if (username.isEmpty() || password.isEmpty() || fullName.isEmpty()) {
+        // Input validation
+        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(fullName)) {
             error.postValue("Tous les champs sont obligatoires");
             return;
         }
 
-        String hashedPassword = PasswordUtils.hashPassword(password);
+        if (!PasswordUtil.isValidPassword(password)) {
+            error.postValue(PasswordUtil.getPasswordStrengthMessage(password));
+            return;
+        }
 
-        User user = new User(
-                username,
-                hashedPassword,
-                fullName,
-                System.currentTimeMillis()
-        );
-
-        repository.register(user, new UserRepository.RegisterCallback() {
+        // Call repository to handle registration
+        repository.register(username, password, fullName, new UserRepository.RegisterCallback() {
             @Override
-            public void onResult(long userId) {
-                authSuccess.postValue((int) userId);
+            public void onSuccess(User user) {
+                authSuccess.postValue(user); // Post the full user object
             }
 
             @Override
@@ -54,19 +55,17 @@ public class AuthViewModel extends AndroidViewModel {
     // ==================== LOGIN ====================
 
     public void login(String username, String password) {
-        if (username.isEmpty() || password.isEmpty()) {
+        // Input validation
+        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             error.postValue("Veuillez remplir tous les champs");
             return;
         }
 
-        repository.login(username, new UserRepository.LoginCallback() {
+        // Call repository to handle login
+        repository.login(username, password, new UserRepository.LoginCallback() {
             @Override
-            public void onResult(User user) {
-                if (PasswordUtils.verifyPassword(password, user.getPassword())) {
-                    authSuccess.postValue(user.getId());
-                } else {
-                    error.postValue("Mot de passe incorrect");
-                }
+            public void onSuccess(User user) {
+                authSuccess.postValue(user); // Post the full user object
             }
 
             @Override
@@ -76,3 +75,4 @@ public class AuthViewModel extends AndroidViewModel {
         });
     }
 }
+

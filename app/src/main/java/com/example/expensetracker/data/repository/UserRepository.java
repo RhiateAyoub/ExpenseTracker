@@ -79,8 +79,7 @@ public class UserRepository {
         executorService.execute(() -> {
             try {
                 // Check if username already exists
-                int count = userDao.checkUsernameExists(username);
-                if (count > 0) {
+                if (userDao.checkUsernameExists(username) > 0) {
                     callback.onError("Ce nom d'utilisateur existe déjà");
                     return;
                 }
@@ -93,7 +92,9 @@ public class UserRepository {
                 long userId = userDao.insert(user);
 
                 if (userId > 0) {
-                    callback.onSuccess((int) userId);
+                    // After successful insert, get the full user object to return
+                    User newUser = userDao.getUserById((int) userId);
+                    callback.onSuccess(newUser);
                 } else {
                     callback.onError("Erreur lors de l'inscription");
                 }
@@ -265,7 +266,7 @@ public class UserRepository {
      * Callback for registration
      */
     public interface RegisterCallback {
-        void onSuccess(int userId);
+        void onSuccess(User user); // Return the full User object
         void onError(String error);
     }
 
