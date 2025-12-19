@@ -4,30 +4,38 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-import androidx.core.content.ContextCompat;
 import com.example.expensetracker.R;
 import com.example.expensetracker.utils.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
-    // View declarations
+    // Header
     private TextView tvWelcome, tvDate;
-    private LinearLayout balanceCard;
-    private LinearLayout positiveSection;
-    private LinearLayout negativeSection;
-    private TextView tvBalanceAmount;
-    private TextView tvBalancePercentage;
+
+    // Sections
+    private LinearLayout noBudgetSection, positiveSection, negativeSection;
+
+    // Card 1: Expenses of the month
+    private TextView tvExpensesAmount, tvExpensesPercentage;
+
+    // Card 2: Most expensive category
+    private TextView tvExpensiveCategory, tvCategoryPercentage;
+
+    // Card 3: Predicted balance
+    private View balanceCard; // Use View to target the card background
+    private TextView tvBalanceAmount, tvBalancePercentageText;
 
     private HomeViewModel viewModel;
     private SessionManager sessionManager;
@@ -36,94 +44,115 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // ==================== INIT ====================
-        initViews(view); // Centralize view initialization
+        initViews(view);
         sessionManager = new SessionManager(requireContext());
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        // ==================== DYNAMIC HEADER ====================
         setupDynamicHeader();
+        setupObservers();
 
-        // ==================== OBSERVERS ====================
-        viewModel.getPredictedBalance().observe(getViewLifecycleOwner(), this::updateBalanceState);
-        viewModel.getBalancePercentage().observe(getViewLifecycleOwner(), percentage ->
-                updateBalanceWithPercentage(
-                        viewModel.getPredictedBalance().getValue(),
-                        percentage
-                )
-        );
+        // Load all data for the home screen
+        viewModel.loadHomeData(sessionManager.getUserId());
 
-        // Load real data from DB
-        int userId = sessionManager.getUserId();
-        viewModel.loadHomeData(userId);
-
-        // ==================== FAB ====================
         FloatingActionButton fabAddExpense = view.findViewById(R.id.fabAddExpense);
         fabAddExpense.setOnClickListener(v ->
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_home_to_addExpense)
+                Navigation.findNavController(v).navigate(R.id.action_home_to_addExpense)
         );
 
         return view;
     }
 
     private void initViews(View view) {
+        // Header
         tvWelcome = view.findViewById(R.id.tvWelcome);
         tvDate = view.findViewById(R.id.tvDate);
-        balanceCard = view.findViewById(R.id.balanceCard);
+
+        // Sections
+        noBudgetSection = view.findViewById(R.id.noBudgetSection);
         positiveSection = view.findViewById(R.id.positiveSection);
         negativeSection = view.findViewById(R.id.negativeSection);
-        tvBalanceAmount = view.findViewById(R.id.tvBalanceAmount);
-        tvBalancePercentage = view.findViewById(R.id.tvBalancePercentage);
+
+        // Card 1 Views (home_card_expenses_month.xml)
+        View expensesCard = view.findViewById(R.id.card_expenses_month_wrapper);
+        tvExpensesAmount = expensesCard.findViewById(R.id.tvExpensesAmount);
+        tvExpensesPercentage = expensesCard.findViewById(R.id.tvExpensesPercentage);
+
+        // Card 2 Views (home_card_expensive_category.xml)
+        View categoryCard = view.findViewById(R.id.card_expensive_category_wrapper);
+        tvExpensiveCategory = categoryCard.findViewById(R.id.tvExpensiveCategory);
+        tvCategoryPercentage = categoryCard.findViewById(R.id.tvCategoryPercentage);
+
+        // Card 3 Views (home_card_balance.xml)
+        View balanceCardWrapper = view.findViewById(R.id.card_balance_wrapper);
+        balanceCard = balanceCardWrapper.findViewById(R.id.balanceCard); // The inner LinearLayout with the background
+        tvBalanceAmount = balanceCardWrapper.findViewById(R.id.tvBalanceAmount);
+        tvBalancePercentageText = balanceCardWrapper.findViewById(R.id.tvBalancePercentage);
     }
 
-    /**
-     * Sets the welcome message and current date in the header.
-     */
     private void setupDynamicHeader() {
-        // Set Welcome Message
         String firstName = sessionManager.getFirstName();
         tvWelcome.setText(String.format("Bonjour %s 👋", firstName));
 
-        // Set Current Date
-        SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy", new Locale("fr", "FR"));
-        String currentDate = sdf.format(Calendar.getInstance().getTime());
-        tvDate.setText(currentDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy", Locale.FRANCE);
+        tvDate.setText(sdf.format(Calendar.getInstance().getTime()));
+    }
+
+    private void setupObservers() {
+        viewModel.getHomeData().observe(getViewLifecycleOwner(), this::updateUI);
     }
 
     /**
-     * Updates the UI based on whether the predicted balance is positive or negative
+     * Main method to update the entire UI based on the HomeData object.
+     * @param data The consolidated data for the home screen.
      */
-    private void updateBalanceState(double balance) {
-        if (balance >= 0) {
+    private void updateUI(HomeViewModel.HomeData data) {
+        if (data == null) return;
+
+        // Update UI based on whether a budget is set
+        if (!data.hasBudget) {
+            noBudgetSection.setVisibility(View.VISIBLE);
+            positiveSection.setVisibility(View.GONE);
+            negativeSection.setVisibility(View.GONE);
+        } else {
+            noBudgetSection.setVisibility(View.GONE);
+            // Show positive or negative message based on prediction
+            positiveSection.setVisibility(data.isOnTrack ? View.VISIBLE : View.GONE);
+            negativeSection.setVisibility(data.isOnTrack ? View.GONE : View.VISIBLE);
+        }
+
+        // Update Card 1: Expenses of the month
+        tvExpensesAmount.setText(String.format(Locale.FRENCH, "%.0f MAD", data.currentMonthExpenses));
+        tvExpensesPercentage.setText(String.format(Locale.FRENCH, "%.0f%% du budget mensuel", data.expensePercentageOfBudget));
+
+        // Update Card 2: Most expensive category
+        if (data.mostExpensiveCategory != null) {
+            tvExpensiveCategory.setText(data.mostExpensiveCategory.category);
+            tvCategoryPercentage.setText(String.format(Locale.FRENCH, "%.0f%% des dépenses", data.expensiveCategoryPercentage));
+        } else {
+            tvExpensiveCategory.setText("N/A");
+            tvCategoryPercentage.setText("Aucune dépense ce mois-ci");
+        }
+
+        // Update Card 3: Predicted balance
+        updateBalanceCard(data.predictedBalance, data.predictedBalancePercentage, data.isOnTrack);
+    }
+
+    /**
+     * Updates the predicted balance card with the correct colors, text, and sign.
+     */
+    private void updateBalanceCard(double predictedBalance, double percentage, boolean isOnTrack) {
+        if (isOnTrack) {
             balanceCard.setBackgroundResource(R.drawable.card_positive);
             tvBalanceAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_green));
-            tvBalancePercentage.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_green));
-
-            positiveSection.setVisibility(View.VISIBLE);
-            negativeSection.setVisibility(View.GONE);
-
-            tvBalanceAmount.setText(String.format("+%.0f MAD", balance));
+            tvBalancePercentageText.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_green));
+            tvBalanceAmount.setText(String.format(Locale.FRENCH, "+%.0f MAD", predictedBalance));
+            tvBalancePercentageText.setText(String.format(Locale.FRENCH, "+%.0f%% du budget mensuel", percentage));
         } else {
             balanceCard.setBackgroundResource(R.drawable.card_negative);
             tvBalanceAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_strong));
-            tvBalancePercentage.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_strong));
-
-            positiveSection.setVisibility(View.GONE);
-            negativeSection.setVisibility(View.VISIBLE);
-
-            tvBalanceAmount.setText(String.format("%.0f MAD", balance));
-        }
-    }
-
-    /**
-     * Updates percentage text only (keeps existing UI logic)
-     */
-    private void updateBalanceWithPercentage(double balance, double percentage) {
-        if (balance >= 0) {
-            tvBalancePercentage.setText(String.format("+%.0f%% du budget mensuel", percentage));
-        } else {
-            tvBalancePercentage.setText(String.format("%.0f%% du budget mensuel", percentage));
+            tvBalancePercentageText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_strong));
+            tvBalanceAmount.setText(String.format(Locale.FRENCH, "%.0f MAD", predictedBalance)); // No plus sign for negative
+            tvBalancePercentageText.setText(String.format(Locale.FRENCH, "-%.0f%% du budget mensuel", percentage));
         }
     }
 }

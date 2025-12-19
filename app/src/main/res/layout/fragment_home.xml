@@ -171,9 +171,9 @@
                 android:clipToPadding="false"
                 android:clipChildren="false">
 
-                <include layout="@layout/home_card_expenses_month"/>
-                <include layout="@layout/home_card_expensive_category"/>
-                <include layout="@layout/home_card_balance"/>
+                <include android:id="@+id/card_expenses_month_wrapper" layout="@layout/home_card_expenses_month"/>
+                <include android:id="@+id/card_expensive_category_wrapper" layout="@layout/home_card_expensive_category"/>
+                <include android:id="@+id/card_balance_wrapper" layout="@layout/home_card_balance"/>
             </LinearLayout>
 
         </LinearLayout>
