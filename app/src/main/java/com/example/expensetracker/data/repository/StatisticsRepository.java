@@ -5,6 +5,7 @@ import android.app.Application;
 import com.example.expensetracker.data.dao.ExpenseDao;
 import com.example.expensetracker.data.database.AppDatabase;
 import com.example.expensetracker.data.dao.ExpenseDao.CategoryTotal;
+import com.example.expensetracker.ui.statistics.MonthlyStats;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -20,69 +21,35 @@ public class StatisticsRepository {
         expenseDao = db.expenseDao();
     }
 
-    // ==================== CATEGORY TOTALS ====================
+    // ==================== CALLBACK INTERFACE ====================
 
-    public interface CategoryTotalsCallback {
-        void onResult(List<CategoryTotal> totals);
+    public interface MonthlyStatsCallback {
+        void onStatsLoaded(MonthlyStats stats);
     }
 
+    // ==================== DATA FETCHING ====================
+
     /**
-     * Get total expenses grouped by category for a given month
+     * Gets all statistics for a given month in a single operation.
+     * This includes category totals, the overall total amount, and the expense count.
      */
-    public void getCategoryTotalsForMonth(
+    public void getMonthlyStats(
             int userId,
             long startDate,
             long endDate,
-            CategoryTotalsCallback callback
+            MonthlyStatsCallback callback
     ) {
         executor.execute(() -> {
-            List<CategoryTotal> result =
-                    expenseDao.getCategoryTotalsForMonth(userId, startDate, endDate);
-            callback.onResult(result);
-        });
-    }
+            // Fetch all data points in one background task
+            List<CategoryTotal> categoryTotals = expenseDao.getCategoryTotalsForMonth(userId, startDate, endDate);
+            double totalExpenses = expenseDao.getTotalExpensesForMonth(userId, startDate, endDate);
+            int expenseCount = expenseDao.getExpenseCountForMonth(userId, startDate, endDate);
 
-    // ==================== TOTAL AMOUNT ====================
+            // Create a container object for the results
+            MonthlyStats monthlyStats = new MonthlyStats(categoryTotals, totalExpenses, expenseCount);
 
-    public interface TotalAmountCallback {
-        void onResult(double total);
-    }
-
-    /**
-     * Get total expenses for a month
-     */
-    public void getTotalExpensesForMonth(
-            int userId,
-            long startDate,
-            long endDate,
-            TotalAmountCallback callback
-    ) {
-        executor.execute(() -> {
-            double total =
-                    expenseDao.getTotalExpensesForMonth(userId, startDate, endDate);
-            callback.onResult(total);
-        });
-    }
-
-    // ==================== COUNT ====================
-
-    public interface ExpenseCountCallback {
-        void onResult(int count);
-    }
-
-    /**
-     * Get expense count for a month
-     */
-    public void getExpenseCountForMonth(
-            int userId,
-            long startDate,
-            long endDate,
-            ExpenseCountCallback callback
-    ) {
-        executor.execute(() -> {
-            int count =
-                    expenseDao.getExpenseCountForMonth(userId, startDate, endDate);
-            callback.onResult(count);
+            // Return the result via the callback
+            callback.onStatsLoaded(monthlyStats);
         });
     }
 }

@@ -1,45 +1,67 @@
 package com.example.expensetracker.ui.statistics;
 
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
-import com.example.expensetracker.data.dao.ExpenseDao;
-import com.example.expensetracker.data.repository.ExpenseRepository;
+import com.example.expensetracker.data.repository.StatisticsRepository;
+import com.example.expensetracker.utils.DateUtils;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Calendar;
 
 public class StatisticsViewModel extends AndroidViewModel {
 
-    private final ExpenseRepository repository;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final StatisticsRepository repository;
+    private final MutableLiveData<Calendar> selectedMonth = new MutableLiveData<>();
+
+    // LiveData to hold the fetched statistics for the UI to observe
+    private final MutableLiveData<MonthlyStats> monthlyStats = new MutableLiveData<>();
 
     public StatisticsViewModel(@NonNull Application application) {
         super(application);
-        repository = new ExpenseRepository(application);
+        repository = new StatisticsRepository(application);
+        // Default to the current month when the ViewModel is created
+        selectedMonth.setValue(Calendar.getInstance());
     }
 
-    public interface CategoryCallback {
-        void onResult(List<ExpenseDao.CategoryTotal> result);
+    // ==================== LIVE DATA GETTERS ====================
+
+    public LiveData<Calendar> getSelectedMonth() {
+        return selectedMonth;
     }
 
-    public void loadCategoryTotals(
-            int userId,
-            int year,
-            int month,
-            CategoryCallback callback
-    ) {
-        executor.execute(() -> {
-            List<ExpenseDao.CategoryTotal> result =
-                    repository.getCategoryTotalsForMonth(userId, year, month);
-            callback.onResult(result);
+    public LiveData<MonthlyStats> getMonthlyStats() {
+        return monthlyStats;
+    }
+
+    // ==================== ACTIONS ====================
+
+    /**
+     * Loads statistics for the currently selected month and user.
+     */
+    public void loadStatsForMonth(int userId) {
+        Calendar calendar = selectedMonth.getValue();
+        if (calendar == null) return;
+
+        long startDate = DateUtils.getStartOfMonth(calendar);
+        long endDate = DateUtils.getEndOfMonth(calendar);
+
+        repository.getMonthlyStats(userId, startDate, endDate, stats -> {
+            monthlyStats.postValue(stats);
         });
     }
 
-    public double getTotalForMonth(int userId, int year, int month) {
-        return repository.getTotalForMonth(userId, year, month);
+    /**
+     * Changes the selected month by a given amount (e.g., -1 for previous, 1 for next).
+     */
+    public void changeMonth(int amount) {
+        Calendar current = selectedMonth.getValue();
+        if (current != null) {
+            Calendar newMonth = (Calendar) current.clone();
+            newMonth.add(Calendar.MONTH, amount);
+            selectedMonth.setValue(newMonth);
+        }
     }
 }
