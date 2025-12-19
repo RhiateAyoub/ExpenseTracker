@@ -4,22 +4,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.core.content.ContextCompat;
-
 import com.example.expensetracker.R;
 import com.example.expensetracker.utils.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
+    // View declarations
+    private TextView tvWelcome, tvDate;
     private LinearLayout balanceCard;
     private LinearLayout positiveSection;
     private LinearLayout negativeSection;
@@ -30,25 +33,19 @@ public class HomeFragment extends Fragment {
     private SessionManager sessionManager;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // ==================== INIT ====================
+        initViews(view); // Centralize view initialization
         sessionManager = new SessionManager(requireContext());
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        // Initialize views
-        balanceCard = view.findViewById(R.id.balanceCard);
-        positiveSection = view.findViewById(R.id.positiveSection);
-        negativeSection = view.findViewById(R.id.negativeSection);
-        tvBalanceAmount = view.findViewById(R.id.tvBalanceAmount);
-        tvBalancePercentage = view.findViewById(R.id.tvBalancePercentage);
+        // ==================== DYNAMIC HEADER ====================
+        setupDynamicHeader();
 
         // ==================== OBSERVERS ====================
-        viewModel.getPredictedBalance().observe(getViewLifecycleOwner(), balance ->
-                updateBalanceState(balance)
-        );
-
+        viewModel.getPredictedBalance().observe(getViewLifecycleOwner(), this::updateBalanceState);
         viewModel.getBalancePercentage().observe(getViewLifecycleOwner(), percentage ->
                 updateBalanceWithPercentage(
                         viewModel.getPredictedBalance().getValue(),
@@ -68,6 +65,30 @@ public class HomeFragment extends Fragment {
         );
 
         return view;
+    }
+
+    private void initViews(View view) {
+        tvWelcome = view.findViewById(R.id.tvWelcome);
+        tvDate = view.findViewById(R.id.tvDate);
+        balanceCard = view.findViewById(R.id.balanceCard);
+        positiveSection = view.findViewById(R.id.positiveSection);
+        negativeSection = view.findViewById(R.id.negativeSection);
+        tvBalanceAmount = view.findViewById(R.id.tvBalanceAmount);
+        tvBalancePercentage = view.findViewById(R.id.tvBalancePercentage);
+    }
+
+    /**
+     * Sets the welcome message and current date in the header.
+     */
+    private void setupDynamicHeader() {
+        // Set Welcome Message
+        String firstName = sessionManager.getFirstName();
+        tvWelcome.setText(String.format("Bonjour %s 👋", firstName));
+
+        // Set Current Date
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy", new Locale("fr", "FR"));
+        String currentDate = sdf.format(Calendar.getInstance().getTime());
+        tvDate.setText(currentDate);
     }
 
     /**

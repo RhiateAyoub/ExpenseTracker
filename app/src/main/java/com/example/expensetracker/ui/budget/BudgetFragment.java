@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import com.example.expensetracker.R;
-import com.example.expensetracker.data.entity.Budget;
 import com.example.expensetracker.utils.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -26,7 +25,10 @@ import java.util.Locale;
 
 public class BudgetFragment extends Fragment {
 
-    // Views
+    // Header Views
+    private TextView tvWelcome, tvDate;
+
+    // Other Views
     private TextView tvMonthName, tvExpensesValue, tvBudgetValue, tvBalanceValue;
     private TextView tvBudgetAmount, btnModifier, btnEnregistrer, btnAnnuler;
     private TextInputEditText etBudgetInput;
@@ -50,6 +52,9 @@ public class BudgetFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         viewModel = new ViewModelProvider(this).get(BudgetViewModel.class);
 
+        // ==================== DYNAMIC HEADER ====================
+        setupDynamicHeader();
+
         setupClickListeners();
         setupObservers();
 
@@ -60,6 +65,11 @@ public class BudgetFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        // Header
+        tvWelcome = view.findViewById(R.id.tvWelcome);
+        tvDate = view.findViewById(R.id.tvDate);
+
+        // Other views
         tvMonthName = view.findViewById(R.id.tvMonthName);
         tvExpensesValue = view.findViewById(R.id.tvExpensesValue);
         tvBudgetValue = view.findViewById(R.id.tvBudgetValue);
@@ -75,6 +85,21 @@ public class BudgetFragment extends Fragment {
         fabAddExpense = view.findViewById(R.id.fabAddExpense);
     }
 
+    /**
+     * Sets the welcome message and current date in the header.
+     */
+    private void setupDynamicHeader() {
+        // Set Welcome Message
+        String firstName = sessionManager.getFirstName();
+        tvWelcome.setText(String.format("Bonjour %s 👋", firstName));
+
+        // Set Current Date
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy", new Locale("fr", "FR"));
+        String currentDate = sdf.format(Calendar.getInstance().getTime());
+        tvDate.setText(currentDate);
+    }
+
+    // ... (keep the rest of the existing methods: setupObservers, updateUI, setupClickListeners, etc.)
     private void setupObservers() {
         // Observe budget changes
         viewModel.budget.observe(getViewLifecycleOwner(), budget -> {

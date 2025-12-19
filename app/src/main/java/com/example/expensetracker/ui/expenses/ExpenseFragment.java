@@ -28,6 +28,10 @@ import java.util.Locale;
 // Implement the listener from the bottom sheet
 public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpenseClickListener, MonthYearBottomSheet.OnMonthSelectedListener {
 
+    // Header Views
+    private TextView tvWelcome, tvDate;
+
+    // Other Views
     private TextView tvSelectedMonth;
     private TextView tvMonthTotal;
     private RecyclerView rvExpenses;
@@ -49,6 +53,9 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         sessionManager = new SessionManager(requireContext());
         viewModel = new ViewModelProvider(this).get(ExpenseViewModel.class);
 
+        // ==================== DYNAMIC HEADER ====================
+        setupDynamicHeader();
+
         setupRecyclerView();
         setupMonthNavigation();
         setupObservers();
@@ -57,6 +64,11 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
     }
 
     private void initViews(View view) {
+        // Header
+        tvWelcome = view.findViewById(R.id.tvWelcome);
+        tvDate = view.findViewById(R.id.tvDate);
+
+        // Other Views
         tvSelectedMonth = view.findViewById(R.id.tvSelectedMonth);
         tvMonthTotal = view.findViewById(R.id.tvMonthTotal);
         rvExpenses = view.findViewById(R.id.rvExpenses);
@@ -71,6 +83,20 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
 
         // Add click listener to the month text to show the bottom sheet
         tvSelectedMonth.setOnClickListener(v -> showMonthPicker());
+    }
+
+    /**
+     * Sets the welcome message and current date in the header.
+     */
+    private void setupDynamicHeader() {
+        // Set Welcome Message
+        String firstName = sessionManager.getFirstName();
+        tvWelcome.setText(String.format("Bonjour %s 👋", firstName));
+
+        // Set Current Date
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy", new Locale("fr", "FR"));
+        String currentDate = sdf.format(Calendar.getInstance().getTime());
+        tvDate.setText(currentDate);
     }
 
     private void setupRecyclerView() {

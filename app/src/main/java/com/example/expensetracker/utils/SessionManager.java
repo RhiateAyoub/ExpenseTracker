@@ -137,14 +137,30 @@ public class SessionManager {
     }
 
     /**
+     * Get the first name of the logged-in user.* If full name is "Ayoub El" it returns "Ayoub".
+     * If no full name, falls back to username.
+     * @return User's first name or username.
+     */
+    public String getFirstName() {
+        String fullName = getFullName();
+        if (fullName != null && !fullName.trim().isEmpty()) {
+            // Split the full name by space and return the first part
+            return fullName.trim().split("\\s+")[0];
+        }
+
+        String username = getUsername();
+        if (username != null) {
+            return username;
+        }
+
+        return "Utilisateur"; // Default fallback
+    }
+
+    /**
      * Get display name (full name if available, otherwise username)
      * This is what you show in "Bonjour [name]"
      *
      * @return - Display name
-     *
-     * Usage:
-     * String name = session.getDisplayName();
-     * tvWelcome.setText("Bonjour " + name + " 👋");
      */
     public String getDisplayName() {
         String fullName = getFullName();
