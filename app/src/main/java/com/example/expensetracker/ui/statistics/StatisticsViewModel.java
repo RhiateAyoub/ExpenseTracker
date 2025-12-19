@@ -64,4 +64,18 @@ public class StatisticsViewModel extends AndroidViewModel {
             selectedMonth.setValue(newMonth);
         }
     }
+
+    /**
+     * Sets the selected month to a specific year and month.
+     * This is called from the MonthYearBottomSheet.
+     */
+    public void setMonth(int year, int month) {
+        Calendar current = selectedMonth.getValue();
+        if (current != null) {
+            Calendar newCal = (Calendar) current.clone();
+            newCal.set(Calendar.YEAR, year);
+            newCal.set(Calendar.MONTH, month);
+            selectedMonth.setValue(newCal);
+        }
+    }
 }

@@ -25,7 +25,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpenseClickListener {
+// Implement the listener from the bottom sheet
+public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpenseClickListener, MonthYearBottomSheet.OnMonthSelectedListener {
 
     private TextView tvSelectedMonth;
     private TextView tvMonthTotal;
@@ -67,6 +68,9 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         fabAddExpense.setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_expenses_to_addExpense)
         );
+
+        // Add click listener to the month text to show the bottom sheet
+        tvSelectedMonth.setOnClickListener(v -> showMonthPicker());
     }
 
     private void setupRecyclerView() {
@@ -99,6 +103,9 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
 
+        // Remove any previous observer to avoid multiple updates
+        viewModel.getExpensesForMonth(userId, year, month).removeObservers(getViewLifecycleOwner());
+
         viewModel.getExpensesForMonth(userId, year, month).observe(getViewLifecycleOwner(), expenses -> {
             if (expenses == null || expenses.isEmpty()) {
                 emptyState.setVisibility(View.VISIBLE);
@@ -121,9 +128,26 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         tvMonthTotal.setText(String.format(Locale.FRENCH, "Total: %.0f MAD", total));
     }
 
+    // Method to show the bottom sheet
+    private void showMonthPicker() {
+        Calendar currentSelection = viewModel.getSelectedMonth().getValue();
+        if (currentSelection != null) {
+            int year = currentSelection.get(Calendar.YEAR);
+            int month = currentSelection.get(Calendar.MONTH);
+            MonthYearBottomSheet bottomSheet = new MonthYearBottomSheet(year, month, this);
+            bottomSheet.show(getParentFragmentManager(), bottomSheet.getTag());
+        }
+    }
+
     @Override
     public void onExpenseClick(Expense expense) {
         // Here you can handle editing or deleting an expense
         Toast.makeText(getContext(), "Dépense: " + expense.getCategory() + " de " + expense.getAmount() + " MAD", Toast.LENGTH_SHORT).show();
+    }
+
+    // This method is called when a month is selected in the bottom sheet
+    @Override
+    public void onMonthSelected(int year, int month) {
+        viewModel.setMonth(year, month);
     }
 }

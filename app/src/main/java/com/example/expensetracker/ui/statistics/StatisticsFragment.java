@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.expensetracker.R;
 import com.example.expensetracker.data.dao.ExpenseDao;
+import com.example.expensetracker.ui.expenses.MonthYearBottomSheet; // Import the bottom sheet
 import com.example.expensetracker.utils.SessionManager;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -33,7 +34,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class StatisticsFragment extends Fragment {
+// Implement the listener from the bottom sheet
+public class StatisticsFragment extends Fragment implements MonthYearBottomSheet.OnMonthSelectedListener {
 
     private StatisticsViewModel viewModel;
     private SessionManager sessionManager;
@@ -89,11 +91,15 @@ public class StatisticsFragment extends Fragment {
         fabAddExpense.setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_statistics_to_addExpense)
         );
+
+        // Add click listener to show the bottom sheet
+        tvSelectedMonth.setOnClickListener(v -> showMonthPicker());
     }
 
     private void setupObservers() {
         viewModel.getSelectedMonth().observe(getViewLifecycleOwner(), calendar -> {
             updateMonthDisplay(calendar);
+            // Trigger data loading for the new month
             viewModel.loadStatsForMonth(sessionManager.getUserId());
         });
 
@@ -125,6 +131,7 @@ public class StatisticsFragment extends Fragment {
         pieChart.setExtraOffsets(5, 10, 5, 5);
         pieChart.setDragDecelerationFrictionCoef(0.95f);
 
+        // This line is now corrected
         pieChart.setDrawHoleEnabled(true);
         pieChart.setHoleColor(Color.TRANSPARENT); // Make hole transparent
         pieChart.setTransparentCircleRadius(61f);
@@ -152,4 +159,24 @@ public class StatisticsFragment extends Fragment {
         pieChart.setData(data);
         pieChart.invalidate();
     }
+
+    // Method to show the bottom sheet
+    private void showMonthPicker() {
+        Calendar currentSelection = viewModel.getSelectedMonth().getValue();
+        if (currentSelection != null) {
+            int year = currentSelection.get(Calendar.YEAR);
+            int month = currentSelection.get(Calendar.MONTH);
+            // Use the correct ViewModel's listener implementation
+            MonthYearBottomSheet bottomSheet = new MonthYearBottomSheet(year, month, this);
+            bottomSheet.show(getParentFragmentManager(), bottomSheet.getTag());
+        }
+    }
+
+    // This method is called when a month is selected in the bottom sheet
+    @Override
+    public void onMonthSelected(int year, int month) {
+        // Now we can call the proper method in the ViewModel
+        viewModel.setMonth(year, month);
+    }
+
 }
