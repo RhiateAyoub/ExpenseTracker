@@ -1,140 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- item_month_summary.xml -->
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    android:layout_marginStart="4dp"
-    android:layout_marginEnd="4dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackground">
+    app:cardElevation="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:orientation="vertical"
-        android:padding="20dp"
-        android:background="@color/white">
+        android:padding="20dp">
 
-        <!-- Month Name and Year -->
+        <TextView
+            android:id="@+id/tvMonthYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_semibold"
+            android:text="Novembre 2025"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:id="@+id/tvMonthYear"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Novembre 2025"
-                android:textSize="18sp"
-                android:fontFamily="@font/inter_semibold"
-                android:textColor="@color/black"/>
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_chevron_right"
-                app:tint="@color/gray_dark"/>
-        </LinearLayout>
-
-        <!-- Stats Container (3 columns) -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal">
 
-            <!-- Column 1: Dépenses -->
+            <!-- Solde -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="start">
+                android:gravity="start"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Dépenses"
-                    android:textSize="12sp"
                     android:fontFamily="@font/inter_regular"
-                    android:textColor="@color/gray_dark"
-                    android:layout_marginBottom="4dp"/>
-
-                <TextView
-                    android:id="@+id/tvExpenses"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="925"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/inter_semibold"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
-
-            <!-- Column 2: Budget -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Budget"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/inter_regular"
-                    android:textColor="@color/gray_dark"
-                    android:layout_marginBottom="4dp"/>
-
-                <TextView
-                    android:id="@+id/tvBudget"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1000"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/inter_semibold"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
-
-            <!-- Column 3: Solde/Économies -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="end">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="Solde"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/inter_regular"
                     android:textColor="@color/gray_dark"
-                    android:layout_marginBottom="4dp"/>
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tvBalance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+75"
-                    android:textSize="20sp"
                     android:fontFamily="@font/inter_semibold"
-                    android:textColor="@color/primary_green"/>
+                    android:text="75 MAD"
+                    android:textColor="@color/primary_green"
+                    android:textSize="16sp" />
             </LinearLayout>
 
+            <!-- Dépenses -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="Dépenses"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvExpenses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="925 MAD"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Budget -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="Budget"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvBudget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="1000 MAD"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
         </LinearLayout>
-
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>

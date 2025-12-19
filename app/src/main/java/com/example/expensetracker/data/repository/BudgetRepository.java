@@ -6,6 +6,7 @@ import com.example.expensetracker.data.dao.BudgetDao;
 import com.example.expensetracker.data.database.AppDatabase;
 import com.example.expensetracker.data.entity.Budget;
 import java.util.Calendar;
+import java.util.List; // Import List
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,21 +24,27 @@ public class BudgetRepository {
 
     /**
      * Gets the budget for a specific month as a LiveData object.
-     * This is the primary method for the UI to observe budget changes.
      */
     public LiveData<Budget> getBudgetForMonthLive(int userId, int year, int month) {
         return budgetDao.getBudgetForMonthLive(userId, year, month);
     }
 
+    /**
+     * Gets all budgets for a user, ordered by most recent.
+     * This will be used by the MonthlyHistoryViewModel.
+     */
+    public LiveData<List<Budget>> getAllBudgetsForUserLive(int userId) {
+        return budgetDao.getAllBudgetsForUserLive(userId);
+    }
+
+
     // ==================== SAVE / UPDATE BUDGET ====================
 
     /**
      * Inserts or updates a budget for a given user, year, and month.
-     * This is the main method for saving changes from the UI.
      */
     public void saveBudget(Budget budget) {
         executor.execute(() -> {
-            // Check if a budget for this user and month already exists.
             Budget existingBudget = budgetDao.getBudgetForMonth(
                     budget.getUserId(),
                     budget.getYear(),
@@ -45,10 +52,8 @@ public class BudgetRepository {
             );
 
             if (existingBudget == null) {
-                // No budget exists, so insert a new one.
                 budgetDao.insert(budget);
             } else {
-                // A budget exists, so update its amount.
                 existingBudget.setAmount(budget.getAmount());
                 budgetDao.update(existingBudget);
             }
@@ -59,7 +64,6 @@ public class BudgetRepository {
 
     /**
      * Returns the budget amount for the current month for a given user.
-     * This is a synchronous call intended for background calculations.
      */
     public double getCurrentMonthBudgetAmount(int userId) {
         Calendar cal = Calendar.getInstance();

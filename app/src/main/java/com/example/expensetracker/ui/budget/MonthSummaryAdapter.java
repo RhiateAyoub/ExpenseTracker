@@ -1,21 +1,20 @@
-// MonthSummaryAdapter.java
 package com.example.expensetracker.ui.budget;
 
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.View;import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.expensetracker.R;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MonthSummaryAdapter extends RecyclerView.Adapter<MonthSummaryAdapter.MonthViewHolder> {
+public class MonthSummaryAdapter extends RecyclerView.Adapter<MonthSummaryAdapter.ViewHolder> {
 
-    private List<MonthSummary> monthSummaries = new ArrayList<>();
-    private OnMonthClickListener listener;
+    private List<MonthSummary> summaries = new ArrayList<>();
+    private final OnMonthClickListener listener;
 
     public interface OnMonthClickListener {
         void onMonthClick(MonthSummary monthSummary);
@@ -25,69 +24,56 @@ public class MonthSummaryAdapter extends RecyclerView.Adapter<MonthSummaryAdapte
         this.listener = listener;
     }
 
+    public void setMonthSummaries(List<MonthSummary> summaries) {
+        this.summaries = summaries;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
-    public MonthViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_month_summary, parent, false);
-        return new MonthViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MonthViewHolder holder, int position) {
-        MonthSummary summary = monthSummaries.get(position);
-
-        // Set month and year
-        holder.tvMonthYear.setText(summary.getMonthYear());
-
-        // Set expenses
-        holder.tvExpenses.setText(String.format(Locale.FRENCH, "%.0f", summary.getExpenses()));
-
-        // Set budget
-        holder.tvBudget.setText(String.format(Locale.FRENCH, "%.0f", summary.getBudget()));
-
-        // Set balance with color
-        double balance = summary.getBalance();
-        String balanceText;
-        if (balance >= 0) {
-            balanceText = String.format(Locale.FRENCH, "+%.0f", balance);
-            holder.tvBalance.setTextColor(holder.itemView.getContext().getColor(R.color.primary_green));
-        } else {
-            balanceText = String.format(Locale.FRENCH, "%.0f", balance);
-            holder.tvBalance.setTextColor(holder.itemView.getContext().getColor(R.color.red_strong));
-        }
-        holder.tvBalance.setText(balanceText);
-
-        // Click listener
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onMonthClick(summary);
-            }
-        });
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        MonthSummary summary = summaries.get(position);
+        holder.bind(summary, listener);
     }
 
     @Override
     public int getItemCount() {
-        return monthSummaries.size();
+        return summaries.size();
     }
 
-    public void setMonthSummaries(List<MonthSummary> summaries) {
-        this.monthSummaries = summaries;
-        notifyDataSetChanged();
-    }
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView tvMonthYear;
+        private final TextView tvBalance;
+        private final TextView tvExpenses;
+        private final TextView tvBudget;
 
-    static class MonthViewHolder extends RecyclerView.ViewHolder {
-        TextView tvMonthYear;
-        TextView tvExpenses;
-        TextView tvBudget;
-        TextView tvBalance;
+        ViewHolder(View view) {
+            super(view);
+            tvMonthYear = view.findViewById(R.id.tvMonthYear);
+            tvBalance = view.findViewById(R.id.tvBalance);
+            tvExpenses = view.findViewById(R.id.tvExpenses);
+            tvBudget = view.findViewById(R.id.tvBudget);
+        }
 
-        public MonthViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvMonthYear = itemView.findViewById(R.id.tvMonthYear);
-            tvExpenses = itemView.findViewById(R.id.tvExpenses);
-            tvBudget = itemView.findViewById(R.id.tvBudget);
-            tvBalance = itemView.findViewById(R.id.tvBalance);
+        void bind(MonthSummary summary, OnMonthClickListener listener) {
+            tvMonthYear.setText(summary.getMonthYear());
+            tvExpenses.setText(String.format(Locale.FRENCH, "%.0f MAD", summary.getExpenses()));
+            tvBudget.setText(String.format(Locale.FRENCH, "%.0f MAD", summary.getBudget()));
+
+            double balance = summary.getBalance();
+            tvBalance.setText(String.format(Locale.FRENCH, "%.0f MAD", balance));
+
+            int colorRes = (balance >= 0) ? R.color.primary_green : R.color.red_strong;
+            tvBalance.setTextColor(ContextCompat.getColor(itemView.getContext(), colorRes));
+
+            itemView.setOnClickListener(v -> listener.onMonthClick(summary));
         }
     }
 }

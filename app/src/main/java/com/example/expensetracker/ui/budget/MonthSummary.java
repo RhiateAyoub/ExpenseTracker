@@ -1,22 +1,24 @@
-// MonthSummary.java
 package com.example.expensetracker.ui.budget;
 
+import java.util.Locale;
+
+/**
+ * A data class to hold the summary for a single month, combining
+ * the budget and the total expenses for that month.
+ */
 public class MonthSummary {
-    private int year;
-    private int month; // 0-11 (Calendar.JANUARY to Calendar.DECEMBER)
-    private double expenses;
-    private double budget;
-    private double balance;
+    private final int year;
+    private final int month;
+    private final double expenses;
+    private final double budget;
 
     public MonthSummary(int year, int month, double expenses, double budget) {
         this.year = year;
         this.month = month;
         this.expenses = expenses;
         this.budget = budget;
-        this.balance = budget - expenses;
     }
 
-    // Getters
     public int getYear() {
         return year;
     }
@@ -34,31 +36,7 @@ public class MonthSummary {
     }
 
     public double getBalance() {
-        return balance;
-    }
-
-    // Setters
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public void setMonth(int month) {
-        this.month = month;
-    }
-
-    public void setExpenses(double expenses) {
-        this.expenses = expenses;
-        this.balance = this.budget - expenses;
-    }
-
-    public void setBudget(double budget) {
-        this.budget = budget;
-        this.balance = budget - this.expenses;
-    }
-
-    // Helper methods
-    public boolean isPositive() {
-        return balance >= 0;
+        return budget - expenses;
     }
 
     public String getMonthName() {
@@ -70,6 +48,6 @@ public class MonthSummary {
     }
 
     public String getMonthYear() {
-        return getMonthName() + " " + year;
+        return String.format(Locale.FRENCH, "%s %d", getMonthName(), year);
     }
 }

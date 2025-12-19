@@ -1,4 +1,3 @@
-// MonthlyHistoryFragment.java
 package com.example.expensetracker.ui.budget;
 
 import android.os.Bundle;
@@ -11,20 +10,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.expensetracker.R;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import com.example.expensetracker.utils.SessionManager;
 
 public class MonthlyHistoryFragment extends Fragment implements MonthSummaryAdapter.OnMonthClickListener {
 
     private RecyclerView rvMonthlyHistory;
     private LinearLayout emptyState;
     private ImageButton btnBack;
+
     private MonthSummaryAdapter adapter;
+    private MonthlyHistoryViewModel viewModel;
+    private SessionManager sessionManager;
 
     @Nullable
     @Override
@@ -32,9 +33,15 @@ public class MonthlyHistoryFragment extends Fragment implements MonthSummaryAdap
         View view = inflater.inflate(R.layout.fragment_monthly_history, container, false);
 
         initViews(view);
+        sessionManager = new SessionManager(requireContext());
+        viewModel = new ViewModelProvider(this).get(MonthlyHistoryViewModel.class);
+
         setupRecyclerView();
         setupBackButton();
-        loadMonthlyData();
+        setupObservers();
+
+        // Load the data
+        viewModel.loadHistory(sessionManager.getUserId());
 
         return view;
     }
@@ -52,71 +59,32 @@ public class MonthlyHistoryFragment extends Fragment implements MonthSummaryAdap
     }
 
     private void setupBackButton() {
-        btnBack.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigateUp();
+        btnBack.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
+    }
+
+    private void setupObservers() {
+        viewModel.monthlySummaries.observe(getViewLifecycleOwner(), summaries -> {
+            if (summaries == null || summaries.isEmpty()) {
+                emptyState.setVisibility(View.VISIBLE);
+                rvMonthlyHistory.setVisibility(View.GONE);
+            } else {
+                emptyState.setVisibility(View.GONE);
+                rvMonthlyHistory.setVisibility(View.VISIBLE);
+                adapter.setMonthSummaries(summaries);
+            }
         });
-    }
-
-    private void loadMonthlyData() {
-        // TODO: Load actual data from database
-        // For now, using dummy data for demonstration
-
-        List<MonthSummary> summaries = generateDummyData();
-
-        if (summaries.isEmpty()) {
-            emptyState.setVisibility(View.VISIBLE);
-            rvMonthlyHistory.setVisibility(View.GONE);
-        } else {
-            emptyState.setVisibility(View.GONE);
-            rvMonthlyHistory.setVisibility(View.VISIBLE);
-            adapter.setMonthSummaries(summaries);
-        }
-    }
-
-    private List<MonthSummary> generateDummyData() {
-        // Generate dummy data for past 6 months
-        List<MonthSummary> summaries = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-
-        // Current month
-        summaries.add(new MonthSummary(
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                925,
-                1000
-        ));
-
-        // Previous months
-        for (int i = 1; i <= 5; i++) {
-            calendar.add(Calendar.MONTH, -1);
-
-            // Generate random-ish data for demonstration
-            double budget = 1000;
-            double expenses = 800 + (Math.random() * 400); // 800-1200
-
-            summaries.add(new MonthSummary(
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    expenses,
-                    budget
-            ));
-        }
-
-        return summaries;
     }
 
     @Override
     public void onMonthClick(MonthSummary monthSummary) {
-        // TODO: Navigate to detailed month view showing all expenses for that month
-        // For now, just show a toast
-        String message = String.format("Détails pour %s", monthSummary.getMonthYear());
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        // When a user clicks a month, navigate to the expenses screen for that month.
+        // We'll pass the year and month to the ExpenseFragment.
+        // Note: This requires the ExpenseFragment to handle these arguments, which we'll do next.
 
-        // Future implementation:
-        // Bundle bundle = new Bundle();
-        // bundle.putInt("year", monthSummary.getYear());
-        // bundle.putInt("month", monthSummary.getMonth());
-        // Navigation.findNavController(requireView())
-        //     .navigate(R.id.action_monthlyHistory_to_monthDetails, bundle);
+        Toast.makeText(requireContext(), "Affichage des dépenses pour " + monthSummary.getMonthYear(), Toast.LENGTH_SHORT).show();
+
+        // TODO: Implement navigation to ExpenseFragment with specific month args
+        // For now, we'll just show the toast.
     }
 }
+

@@ -36,6 +36,10 @@ public class ExpenseRepository {
 
     // ==================== GET EXPENSES ====================
 
+    public LiveData<List<Expense>> getAllExpensesForUserLive(int userId) {
+        return expenseDao.getAllExpensesForUserLive(userId);
+    }
+
     public LiveData<List<Expense>> getExpensesForMonthLive(
             int userId,
             int year,
