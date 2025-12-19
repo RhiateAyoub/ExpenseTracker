@@ -39,7 +39,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etUsername"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     style="@style/TextInputHint"
                     android:hint="Nom d’utilisateur"
                     android:inputType="textPersonName" />
@@ -54,7 +54,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etFullName"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     style="@style/TextInputHint"
                     android:hint="Nom complet"
                     android:inputType="textPersonName" />
@@ -69,7 +69,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     style="@style/TextInputHint"
                     android:hint="Mot de passe"
                     android:inputType="textPassword" />
@@ -84,7 +84,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etConfirmPassword"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     style="@style/TextInputHint"
                     android:hint="Confirmer le mot de passe"
                     android:inputType="textPassword" />
@@ -94,7 +94,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnInscrire"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 style="@style/ButtonText"
                 android:text="S'inscrire"
                 android:textColor="@color/white"

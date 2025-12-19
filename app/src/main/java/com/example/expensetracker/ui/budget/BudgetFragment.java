@@ -1,4 +1,3 @@
-// BudgetFragment.java
 package com.example.expensetracker.ui.budget;
 
 import android.content.Context;
@@ -14,8 +13,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import com.example.expensetracker.R;
+import com.example.expensetracker.data.entity.Budget;
+import com.example.expensetracker.utils.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import java.text.SimpleDateFormat;
@@ -24,22 +26,20 @@ import java.util.Locale;
 
 public class BudgetFragment extends Fragment {
 
-    private TextView tvMonthName;
-    private TextView tvExpensesValue;
-    private TextView tvBudgetValue;
-    private TextView tvBalanceValue;
-    private TextView tvBudgetAmount;
-    private TextView btnModifier;
-    private TextView btnEnregistrer;
-    private TextView btnAnnuler;
+    // Views
+    private TextView tvMonthName, tvExpensesValue, tvBudgetValue, tvBalanceValue;
+    private TextView tvBudgetAmount, btnModifier, btnEnregistrer, btnAnnuler;
     private TextInputEditText etBudgetInput;
-    private LinearLayout displayMode;
-    private LinearLayout editMode;
+    private LinearLayout displayMode, editMode;
     private ImageButton btnMonthDetails;
     private FloatingActionButton fabAddExpense;
 
-    private double currentBudget = 1000; // Default budget
-    private double currentExpenses = 925; // This should come from database
+    // ViewModel and Session
+    private BudgetViewModel viewModel;
+    private SessionManager sessionManager;
+
+    private double currentBudgetAmount = 0.0;
+    private double currentExpensesAmount = 0.0;
 
     @Nullable
     @Override
@@ -47,8 +47,14 @@ public class BudgetFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_budget, container, false);
 
         initViews(view);
+        sessionManager = new SessionManager(requireContext());
+        viewModel = new ViewModelProvider(this).get(BudgetViewModel.class);
+
         setupClickListeners();
-        updateDisplay();
+        setupObservers();
+
+        // Load data for the logged-in user
+        viewModel.loadData(sessionManager.getUserId());
 
         return view;
     }
@@ -69,102 +75,96 @@ public class BudgetFragment extends Fragment {
         fabAddExpense = view.findViewById(R.id.fabAddExpense);
     }
 
-    private void setupClickListeners() {
-        // Modify button - switch to edit mode
-        btnModifier.setOnClickListener(v -> {
-            displayMode.setVisibility(View.GONE);
-            editMode.setVisibility(View.VISIBLE);
-            btnModifier.setVisibility(View.GONE);
-            etBudgetInput.setText(String.valueOf((int) currentBudget));
-            etBudgetInput.requestFocus();
-
-            // Show keyboard
-            showKeyboard(etBudgetInput);
+    private void setupObservers() {
+        // Observe budget changes
+        viewModel.budget.observe(getViewLifecycleOwner(), budget -> {
+            currentBudgetAmount = (budget != null) ? budget.getAmount() : 0.0;
+            updateUI();
         });
 
-        // Save button - save and switch to display mode
-        btnEnregistrer.setOnClickListener(v -> {
-            String input = etBudgetInput.getText().toString().trim();
-            if (input.isEmpty()) {
-                Toast.makeText(requireContext(), "Veuillez entrer un montant", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            try {
-                currentBudget = Double.parseDouble(input);
-                if (currentBudget <= 0) {
-                    Toast.makeText(requireContext(), "Le budget doit être positif", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // Hide keyboard first
-                hideKeyboard();
-
-                // TODO: Save to database
-                // budgetViewModel.updateBudget(currentBudget);
-
-                updateDisplay();
-                displayMode.setVisibility(View.VISIBLE);
-                editMode.setVisibility(View.GONE);
-                btnModifier.setVisibility(View.VISIBLE);
-
-                Toast.makeText(requireContext(), "Budget mis à jour", Toast.LENGTH_SHORT).show();
-
-            } catch (NumberFormatException e) {
-                Toast.makeText(requireContext(), "Montant invalide", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Cancel button - switch back to display mode
-        btnAnnuler.setOnClickListener(v -> {
-            // Hide keyboard
-            hideKeyboard();
-
-            displayMode.setVisibility(View.VISIBLE);
-            editMode.setVisibility(View.GONE);
-            btnModifier.setVisibility(View.VISIBLE);
-        });
-
-        // Month details button (optional - navigate somewhere)
-        btnMonthDetails.setOnClickListener(v -> {
-            // Navigate to Monthly History
-            Navigation.findNavController(v).navigate(R.id.action_budget_to_monthlyHistory);
-        });
-
-        // FAB - navigate to add expense
-        fabAddExpense.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_budget_to_addExpense);
+        // Observe expense changes
+        viewModel.totalExpenses.observe(getViewLifecycleOwner(), total -> {
+            currentExpensesAmount = (total != null) ? total : 0.0;
+            updateUI();
         });
     }
 
-    private void updateDisplay() {
+    private void updateUI() {
         // Update month name
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM", new Locale("fr", "FR"));
         String monthName = sdf.format(Calendar.getInstance().getTime());
         monthName = monthName.substring(0, 1).toUpperCase() + monthName.substring(1);
         tvMonthName.setText(monthName);
 
-        // TODO: Load actual expenses from database
-        // For now using dummy data
-        currentExpenses = 925;
-
         // Calculate balance
-        double balance = currentBudget - currentExpenses;
+        double balance = currentBudgetAmount - currentExpensesAmount;
 
-        // Update values
-        tvExpensesValue.setText(String.format(Locale.FRENCH, "%.0f", currentExpenses));
-        tvBudgetValue.setText(String.format(Locale.FRENCH, "%.0f", currentBudget));
+        // Update values in the UI
+        tvExpensesValue.setText(String.format(Locale.FRENCH, "%.0f", currentExpensesAmount));
+        tvBudgetValue.setText(String.format(Locale.FRENCH, "%.0f", currentBudgetAmount));
         tvBalanceValue.setText(String.format(Locale.FRENCH, "%.0f", balance));
-        tvBudgetAmount.setText(String.format(Locale.FRENCH, "%.0f MAD", currentBudget));
+        tvBudgetAmount.setText(String.format(Locale.FRENCH, "%.0f MAD", currentBudgetAmount));
 
         // Color balance based on positive/negative
-        if (balance >= 0) {
-            tvBalanceValue.setTextColor(getResources().getColor(R.color.primary_green, null));
-        } else {
-            tvBalanceValue.setTextColor(getResources().getColor(R.color.red_strong, null));
+        int balanceColor = (balance >= 0) ? R.color.primary_green : R.color.red_strong;
+        tvBalanceValue.setTextColor(getResources().getColor(balanceColor, null));
+    }
+
+    private void setupClickListeners() {
+        btnModifier.setOnClickListener(v -> switchToEditMode());
+        btnEnregistrer.setOnClickListener(v -> saveBudget());
+        btnAnnuler.setOnClickListener(v -> switchToDisplayMode());
+
+        btnMonthDetails.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_budget_to_monthlyHistory)
+        );
+
+        fabAddExpense.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_budget_to_addExpense)
+        );
+    }
+
+    private void switchToEditMode() {
+        displayMode.setVisibility(View.GONE);
+        editMode.setVisibility(View.VISIBLE);
+        btnModifier.setVisibility(View.GONE);
+        etBudgetInput.setText(String.valueOf((int) currentBudgetAmount));
+        etBudgetInput.requestFocus();
+        showKeyboard(etBudgetInput);
+    }
+
+    private void switchToDisplayMode() {
+        hideKeyboard();
+        displayMode.setVisibility(View.VISIBLE);
+        editMode.setVisibility(View.GONE);
+        btnModifier.setVisibility(View.VISIBLE);
+    }
+
+    private void saveBudget() {
+        String input = etBudgetInput.getText().toString().trim();
+        if (input.isEmpty()) {
+            Toast.makeText(requireContext(), "Veuillez entrer un montant", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double newBudgetAmount = Double.parseDouble(input);
+            if (newBudgetAmount < 0) {
+                Toast.makeText(requireContext(), "Le budget ne peut pas être négatif", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            viewModel.saveBudget(newBudgetAmount);
+            hideKeyboard();
+            switchToDisplayMode();
+            Toast.makeText(requireContext(), "Budget mis à jour", Toast.LENGTH_SHORT).show();
+
+        } catch (NumberFormatException e) {
+            Toast.makeText(requireContext(), "Montant invalide", Toast.LENGTH_SHORT).show();
         }
     }
 
+    // --- Keyboard Utility Methods ---
     private void hideKeyboard() {
         View view = requireActivity().getCurrentFocus();
         if (view != null) {
@@ -178,12 +178,5 @@ public class BudgetFragment extends Fragment {
             InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Refresh data when returning to this fragment
-        updateDisplay();
     }
 }

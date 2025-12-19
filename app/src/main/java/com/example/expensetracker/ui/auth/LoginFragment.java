@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView; // Import TextView
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,13 +16,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.expensetracker.R;
-import com.example.expensetracker.data.entity.User;
 import com.example.expensetracker.utils.SessionManager;
 
 public class LoginFragment extends Fragment {
 
     private EditText etUsername, etPassword;
     private Button btnLogin;
+    private TextView tvInscrire; // TextView for navigating to register
 
     private AuthViewModel viewModel;
     private SessionManager sessionManager;
@@ -34,13 +35,17 @@ public class LoginFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
+        // ==================== VIEW INITIALIZATION ====================
         etUsername = view.findViewById(R.id.etUsername);
         etPassword = view.findViewById(R.id.etPassword);
         btnLogin = view.findViewById(R.id.btnSeConnecter);
+        tvInscrire = view.findViewById(R.id.tvInscrire); // Find the TextView
 
+        // ==================== VIEWMODEL & SESSION ====================
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
         sessionManager = new SessionManager(requireContext());
 
+        // ==================== CLICK LISTENERS ====================
         btnLogin.setOnClickListener(v ->
                 viewModel.login(
                         etUsername.getText().toString().trim(),
@@ -48,12 +53,21 @@ public class LoginFragment extends Fragment {
                 )
         );
 
-        // Updated observer to handle the User object
+        // Navigate to RegisterFragment when "S'inscrire" is clicked
+        tvInscrire.setOnClickListener(v ->
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_loginFragment_to_registerFragment)
+        );
+
+        // ==================== OBSERVERS ====================
         viewModel.authSuccess.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
+                // Create session
                 sessionManager.createLoginSession(user.getId(), user.getUsername(), user.getFullName());
+
+                // Navigate to home and clear the back stack
                 NavHostFragment.findNavController(this)
-                        .navigate(R.id.homeFragment);
+                        .navigate(R.id.action_loginFragment_to_homeFragment);
             }
         });
 

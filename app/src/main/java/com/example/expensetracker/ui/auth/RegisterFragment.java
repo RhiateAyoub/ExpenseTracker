@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView; // Import TextView
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,16 +16,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.expensetracker.R;
-import com.example.expensetracker.data.entity.User;
-import com.example.expensetracker.utils.SessionManager;
+import com.example.expensetracker.data.entity.User; // Keep this import
+import com.example.expensetracker.utils.SessionManager; // Keep this import
 
 public class RegisterFragment extends Fragment {
 
     private EditText etUsername, etPassword, etFullName;
     private Button btnRegister;
+    private TextView tvSeConnecter; // TextView for navigating back to login
 
     private AuthViewModel viewModel;
-    private SessionManager sessionManager;
 
     @Nullable
     @Override
@@ -38,10 +39,11 @@ public class RegisterFragment extends Fragment {
         etPassword = view.findViewById(R.id.etPassword);
         etFullName = view.findViewById(R.id.etFullName);
         btnRegister = view.findViewById(R.id.btnInscrire);
+        tvSeConnecter = view.findViewById(R.id.tvSeConnecter); // Find the TextView
 
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
-        sessionManager = new SessionManager(requireContext());
 
+        // ==================== CLICK LISTENERS ====================
         btnRegister.setOnClickListener(v ->
                 viewModel.register(
                         etUsername.getText().toString().trim(),
@@ -50,12 +52,21 @@ public class RegisterFragment extends Fragment {
                 )
         );
 
-        // Updated observer to handle the User object
+        // Navigate back to LoginFragment when "Se connecter" is clicked
+        tvSeConnecter.setOnClickListener(v ->
+                NavHostFragment.findNavController(this)
+                        .navigateUp() // Simply go back to the previous screen (Login)
+        );
+
+        // ==================== OBSERVERS ====================
         viewModel.authSuccess.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
-                sessionManager.createLoginSession(user.getId(), user.getUsername(), user.getFullName());
+                // Registration was successful
+                Toast.makeText(requireContext(), "Compte créé avec succès ! Veuillez vous connecter.", Toast.LENGTH_LONG).show();
+
+                // Navigate back to the login screen
                 NavHostFragment.findNavController(this)
-                        .navigate(R.id.homeFragment);
+                        .navigate(R.id.action_registerFragment_to_loginFragment);
             }
         });
 

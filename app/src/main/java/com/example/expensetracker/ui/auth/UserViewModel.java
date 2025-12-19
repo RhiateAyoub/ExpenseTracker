@@ -17,8 +17,9 @@ public class UserViewModel extends AndroidViewModel {
         repository = new UserRepository(application);
     }
 
-    public void register(User user, String password) {
-        repository.register(user, password);
+    // You need to accept a RegisterCallback here
+    public void register(User user, String password, UserRepository.RegisterCallback callback) {
+        repository.register(user.getUsername(), password, user.getFullName(), callback);
     }
 
     public void login(

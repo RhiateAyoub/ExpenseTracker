@@ -5,6 +5,49 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
+    <!-- ==================== AUTHENTICATION FRAGMENTS ==================== -->
+
+    <!-- Login Fragment -->
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.expensetracker.ui.auth.LoginFragment"
+        android:label="Connexion"
+        tools:layout="@layout/fragment_login">
+
+        <!-- Action to navigate from Login to Register -->
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <!-- Action to navigate from Login to Home (after successful login) -->
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Register Fragment -->
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.expensetracker.ui.auth.RegisterFragment"
+        android:label="Inscription"
+        tools:layout="@layout/fragment_register">
+
+        <!-- Action to navigate from Register back to Login (after successful registration) -->
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- ==================== MAIN APP FRAGMENTS ==================== -->
+
     <!-- Home Fragment -->
     <fragment
         android:id="@+id/homeFragment"
@@ -12,7 +55,7 @@
         android:label="Accueil"
         tools:layout="@layout/fragment_home">
 
-        <!-- Add action to navigate to Add Expense -->
+        <!-- Action to navigate to Add Expense -->
         <action
             android:id="@+id/action_home_to_addExpense"
             app:destination="@id/addExpenseFragment"
@@ -39,20 +82,6 @@
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
-    <!-- Add Expense Fragment -->
-    <fragment
-        android:id="@+id/addExpenseFragment"
-        android:name="com.example.expensetracker.ui.expenses.AddExpenseFragment"
-        android:label="Ajouter une dépense"
-        tools:layout="@layout/fragment_add_expense" />
-
-    <!-- Monthly History Fragment -->
-    <fragment
-        android:id="@+id/monthlyHistoryFragment"
-        android:name="com.example.expensetracker.ui.budget.MonthlyHistoryFragment"
-        android:label="Historique mensuel"
-        tools:layout="@layout/fragment_monthly_history" />
-
     <!-- Budget Fragment -->
     <fragment
         android:id="@+id/budgetFragment"
@@ -69,7 +98,7 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
-        <!-- Add action to navigate to Add Expense -->
+        <!-- Action to navigate to Add Expense -->
         <action
             android:id="@+id/action_budget_to_addExpense"
             app:destination="@id/addExpenseFragment"
@@ -86,7 +115,7 @@
         android:label="Stats"
         tools:layout="@layout/fragment_statistics">
 
-        <!-- Add action to navigate to Add Expense -->
+        <!-- Action to navigate to Add Expense -->
         <action
             android:id="@+id/action_statistics_to_addExpense"
             app:destination="@id/addExpenseFragment"
@@ -95,5 +124,21 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
+    <!-- ==================== UTILITY FRAGMENTS ==================== -->
+
+    <!-- Add Expense Fragment -->
+    <fragment
+        android:id="@+id/addExpenseFragment"
+        android:name="com.example.expensetracker.ui.expenses.AddExpenseFragment"
+        android:label="Ajouter une dépense"
+        tools:layout="@layout/fragment_add_expense" />
+
+    <!-- Monthly History Fragment -->
+    <fragment
+        android:id="@+id/monthlyHistoryFragment"
+        android:name="com.example.expensetracker.ui.budget.MonthlyHistoryFragment"
+        android:label="Historique mensuel"
+        tools:layout="@layout/fragment_monthly_history" />
 
 </navigation>

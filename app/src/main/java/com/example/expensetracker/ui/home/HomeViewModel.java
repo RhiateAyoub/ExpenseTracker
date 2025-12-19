@@ -33,7 +33,7 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void loadHomeData(int userId) {
         new Thread(() -> {
-            double monthlyBudget = budgetRepository.getCurrentMonthBudget(userId);
+            double monthlyBudget = budgetRepository.getCurrentMonthBudgetAmount(userId);
             double expenses = expenseRepository.getCurrentMonthTotal(userId);
 
             double balance = monthlyBudget - expenses;
