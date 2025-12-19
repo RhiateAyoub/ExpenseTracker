@@ -43,4 +43,15 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("androidx.navigation:navigation-fragment:2.9.6")
     implementation("androidx.navigation:navigation-ui:2.9.6")
+
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+
+    // ViewModel and LiveData
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.6.2")
+
+    // BCrypt for password hashing
+    implementation("org.mindrot:jbcrypt:0.4")
 }

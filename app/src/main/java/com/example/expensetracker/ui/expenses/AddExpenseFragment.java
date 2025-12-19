@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import com.example.expensetracker.R;
-import com.example.expensetracker.data.model.Expense;
+import com.example.expensetracker.data.entity.Expense;
 import com.example.expensetracker.utils.CategoryHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;

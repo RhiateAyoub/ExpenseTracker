@@ -1,7 +1,6 @@
 // ExpensesFragment.java
 package com.example.expensetracker.ui.expenses;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.expensetracker.R;
-import com.example.expensetracker.data.model.Expense;
+import com.example.expensetracker.data.entity.Expense;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

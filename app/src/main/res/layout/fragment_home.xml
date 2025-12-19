@@ -59,6 +59,39 @@
                     android:layout_marginEnd="0dp"/>
             </LinearLayout>
 
+            <!-- État 1: NO BUDGET (orange) -->
+            <LinearLayout
+                android:id="@+id/noBudgetSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvNoBudgetTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Aucun budget"
+                    android:textColor="#FF9800"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvNoBudgetMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Définissez un budget pour ce mois"
+                    android:textColor="#FF9800"
+                    android:textSize="15sp"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
             <!-- POSITIVE MESSAGE SECTION -->
             <LinearLayout
                 android:id="@+id/positiveSection"
