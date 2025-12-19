@@ -1,4 +1,3 @@
-// ExpensesFragment.java
 package com.example.expensetracker.ui.expenses;
 
 import android.os.Bundle;
@@ -8,17 +7,20 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.expensetracker.R;
 import com.example.expensetracker.data.entity.Expense;
+import com.example.expensetracker.utils.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -31,12 +33,11 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
     private LinearLayout emptyState;
     private ImageButton btnPreviousMonth;
     private ImageButton btnNextMonth;
-    private LinearLayout btnMonthPicker;
     private FloatingActionButton fabAddExpense;
 
     private ExpenseAdapter adapter;
-    private Calendar currentMonth;
-    private List<Expense> allExpenses = new ArrayList<>();
+    private ExpenseViewModel viewModel;
+    private SessionManager sessionManager;
 
     @Nullable
     @Override
@@ -44,13 +45,12 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         View view = inflater.inflate(R.layout.fragment_expenses, container, false);
 
         initViews(view);
+        sessionManager = new SessionManager(requireContext());
+        viewModel = new ViewModelProvider(this).get(ExpenseViewModel.class);
+
         setupRecyclerView();
         setupMonthNavigation();
-
-        // Initialize with current month
-        currentMonth = Calendar.getInstance();
-        updateMonthDisplay();
-        loadExpenses();
+        setupObservers();
 
         return view;
     }
@@ -62,13 +62,11 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         emptyState = view.findViewById(R.id.emptyState);
         btnPreviousMonth = view.findViewById(R.id.btnPreviousMonth);
         btnNextMonth = view.findViewById(R.id.btnNextMonth);
-        btnMonthPicker = view.findViewById(R.id.btnMonthPicker);
         fabAddExpense = view.findViewById(R.id.fabAddExpense);
 
-        fabAddExpense.setOnClickListener(v -> {
-            // Navigate to Add Expense fragment
-            Navigation.findNavController(v).navigate(R.id.action_expenses_to_addExpense);
-        });
+        fabAddExpense.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_expenses_to_addExpense)
+        );
     }
 
     private void setupRecyclerView() {
@@ -78,87 +76,54 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
     }
 
     private void setupMonthNavigation() {
-        btnPreviousMonth.setOnClickListener(v -> {
-            currentMonth.add(Calendar.MONTH, -1);
-            updateMonthDisplay();
-            loadExpenses();
-        });
-
-        btnNextMonth.setOnClickListener(v -> {
-            currentMonth.add(Calendar.MONTH, 1);
-            updateMonthDisplay();
-            loadExpenses();
-        });
-
-        btnMonthPicker.setOnClickListener(v -> showMonthYearPicker());
+        btnPreviousMonth.setOnClickListener(v -> viewModel.changeMonth(-1));
+        btnNextMonth.setOnClickListener(v -> viewModel.changeMonth(1));
     }
 
-    private void updateMonthDisplay() {
+    private void setupObservers() {
+        viewModel.getSelectedMonth().observe(getViewLifecycleOwner(), calendar -> {
+            updateMonthDisplay(calendar);
+            loadExpensesForMonth(calendar);
+        });
+    }
+
+    private void updateMonthDisplay(Calendar calendar) {
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", new Locale("fr", "FR"));
-        String monthYear = sdf.format(currentMonth.getTime());
-        // Capitalize first letter
+        String monthYear = sdf.format(calendar.getTime());
         monthYear = monthYear.substring(0, 1).toUpperCase() + monthYear.substring(1);
         tvSelectedMonth.setText(monthYear);
     }
 
-    private void showMonthYearPicker() {
-        MonthYearBottomSheet sheet = new MonthYearBottomSheet(
-                currentMonth.get(Calendar.YEAR),
-                currentMonth.get(Calendar.MONTH),
-                (year, month) -> {
-                    currentMonth.set(Calendar.YEAR, year);
-                    currentMonth.set(Calendar.MONTH, month);
-                    updateMonthDisplay();
-                    loadExpenses();
-                }
-        );
-        sheet.show(getParentFragmentManager(), "MonthYearPicker");
-    }
+    private void loadExpensesForMonth(Calendar calendar) {
+        int userId = sessionManager.getUserId();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
 
-    private void loadExpenses() {
-        // TODO: Load expenses from database for the selected month
-        // For now, using dummy data
-        List<Expense> monthExpenses = getExpensesForMonth();
-
-        if (monthExpenses.isEmpty()) {
-            emptyState.setVisibility(View.VISIBLE);
-            rvExpenses.setVisibility(View.GONE);
-            tvMonthTotal.setText("Total: 0 MAD");
-        } else {
-            emptyState.setVisibility(View.GONE);
-            rvExpenses.setVisibility(View.VISIBLE);
-            adapter.setExpenses(monthExpenses);
-
-            // Calculate total
-            double total = 0;
-            for (Expense expense : monthExpenses) {
-                total += expense.getAmount();
+        viewModel.getExpensesForMonth(userId, year, month).observe(getViewLifecycleOwner(), expenses -> {
+            if (expenses == null || expenses.isEmpty()) {
+                emptyState.setVisibility(View.VISIBLE);
+                rvExpenses.setVisibility(View.GONE);
+                tvMonthTotal.setText("Total: 0 MAD");
+            } else {
+                emptyState.setVisibility(View.GONE);
+                rvExpenses.setVisibility(View.VISIBLE);
+                adapter.setExpenses(expenses);
+                calculateAndDisplayTotal(expenses);
             }
-            tvMonthTotal.setText(String.format(Locale.FRENCH, "Total: %.0f MAD", total));
-        }
+        });
     }
 
-    private List<Expense> getExpensesForMonth() {
-        // TODO: Filter expenses from database by selected month
-        // This is dummy data for demonstration
-        List<Expense> expenses = new ArrayList<>();
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(currentMonth.get(Calendar.YEAR), currentMonth.get(Calendar.MONTH), 28);
-
-        expenses.add(new Expense(1, 16, "Transport", cal.getTimeInMillis(), "2x Taxi"));
-        expenses.add(new Expense(2, 115, "Courses", cal.getTimeInMillis(), "Dinde, Pain, Tomates"));
-        expenses.add(new Expense(3, 40, "Restauration", cal.getTimeInMillis(), "Pizza"));
-
-        cal.set(currentMonth.get(Calendar.YEAR), currentMonth.get(Calendar.MONTH), 27);
-        expenses.add(new Expense(4, 50, "Santé", cal.getTimeInMillis(), "Doliprane, Rhumix"));
-        expenses.add(new Expense(5, 30, "Divertissement", cal.getTimeInMillis(), "Match de foot"));
-
-        return expenses;
+    private void calculateAndDisplayTotal(List<Expense> expenses) {
+        double total = 0;
+        for (Expense expense : expenses) {
+            total += expense.getAmount();
+        }
+        tvMonthTotal.setText(String.format(Locale.FRENCH, "Total: %.0f MAD", total));
     }
 
     @Override
     public void onExpenseClick(Expense expense) {
-        // TODO: Handle expense item click (edit/delete)
+        // Here you can handle editing or deleting an expense
+        Toast.makeText(getContext(), "Dépense: " + expense.getCategory() + " de " + expense.getAmount() + " MAD", Toast.LENGTH_SHORT).show();
     }
 }
