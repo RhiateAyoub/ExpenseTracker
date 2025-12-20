@@ -4,6 +4,7 @@ package com.example.expensetracker.ui.expenses;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,13 +22,17 @@ import java.util.Locale;
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
 
     private List<Expense> expenses = new ArrayList<>();
-    private OnExpenseClickListener listener;
+    private final OnExpenseActionsListener listener;
+    private int expandedPosition = -1; // To track which item is showing actions
 
-    public interface OnExpenseClickListener {
+    // Updated listener interface
+    public interface OnExpenseActionsListener {
         void onExpenseClick(Expense expense);
+        void onDeleteClick(Expense expense);
+        void onModifyClick(Expense expense);
     }
 
-    public ExpenseAdapter(OnExpenseClickListener listener) {
+    public ExpenseAdapter(OnExpenseActionsListener listener) {
         this.listener = listener;
     }
 
@@ -42,6 +47,11 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     @Override
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenses.get(position);
+
+        // Determine if the current item is the one with actions revealed
+        final boolean isExpanded = position == expandedPosition;
+        holder.contentLayout.setVisibility(isExpanded ? View.GONE : View.VISIBLE);
+        holder.actionsLayout.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
 
         // Check if we need to show date header
         boolean showDateHeader = false;
@@ -89,10 +99,44 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         // Set amount
         holder.tvExpenseAmount.setText(String.format(Locale.FRENCH, "-%.0f MAD", expense.getAmount()));
 
-        // Click listener
+        // Click listener to hide actions when tapping outside
         holder.itemView.setOnClickListener(v -> {
+            if (isExpanded) {
+                // If actions are visible, a normal click should hide them
+                expandedPosition = -1;
+                notifyItemChanged(position);
+            } else {
+                // Otherwise, perform the normal click action
+                if (listener != null) {
+                    listener.onExpenseClick(expense);
+                }
+            }
+        });
+
+        // Long press listener to reveal the actions
+        holder.itemView.setOnLongClickListener(v -> {
+            // Hide previously expanded item
+            if (expandedPosition != -1) {
+                notifyItemChanged(expandedPosition);
+            }
+            // Expand the new item
+            expandedPosition = holder.getAdapterPosition();
+            notifyItemChanged(expandedPosition);
+            return true; // Consume the long click event
+        });
+
+        // Listeners for the new action buttons
+        holder.btnDelete.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onExpenseClick(expense);
+                listener.onDeleteClick(expense);
+                expandedPosition = -1; // Hide actions after click
+            }
+        });
+
+        holder.btnModify.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onModifyClick(expense);
+                expandedPosition = -1; // Hide actions after click
             }
         });
     }
@@ -136,7 +180,8 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     }
 
     static class ExpenseViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout dateHeader;
+        LinearLayout contentLayout, actionsLayout, dateHeader;
+        ImageButton btnDelete, btnModify;
         TextView tvExpenseDate;
         TextView tvExpenseDayName;
         ImageView ivCategoryIcon;
@@ -146,6 +191,10 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
 
         public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
+            contentLayout = itemView.findViewById(R.id.contentLayout);
+            actionsLayout = itemView.findViewById(R.id.actionsLayout);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnModify = itemView.findViewById(R.id.btnModify);
             dateHeader = itemView.findViewById(R.id.dateHeader);
             tvExpenseDate = itemView.findViewById(R.id.tvExpenseDate);
             tvExpenseDayName = itemView.findViewById(R.id.tvExpenseDayName);

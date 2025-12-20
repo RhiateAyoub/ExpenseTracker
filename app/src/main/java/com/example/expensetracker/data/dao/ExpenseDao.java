@@ -154,7 +154,7 @@ public interface ExpenseDao {
      * @return - Expense object
      */
     @Query("SELECT * FROM expenses WHERE id = :expenseId LIMIT 1")
-    Expense getExpenseById(int expenseId);
+    LiveData<Expense> getExpenseById(int expenseId);
 
     // ==================== CALCULATIONS ====================
 

@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.android.navigation.safeargs)
 }
 
 android {
@@ -41,8 +43,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation("androidx.navigation:navigation-fragment:2.9.6")
-    implementation("androidx.navigation:navigation-ui:2.9.6")
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
+//    implementation("androidx.navigation:navigation-fragment:2.9.6")
+//    implementation("androidx.navigation:navigation-ui:2.9.6")
 
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")

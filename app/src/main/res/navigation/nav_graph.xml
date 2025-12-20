@@ -85,6 +85,14 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_expenses_to_editExpense"
+            app:destination="@id/editExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <!-- Budget Fragment -->
@@ -138,6 +146,16 @@
         android:name="com.example.expensetracker.ui.expenses.AddExpenseFragment"
         android:label="Ajouter une dépense"
         tools:layout="@layout/fragment_add_expense" />
+
+    <fragment
+        android:id="@+id/editExpenseFragment"
+        android:name="com.example.expensetracker.ui.expenses.EditExpenseFragment"
+        android:label="Modifier la dépense"
+        tools:layout="@layout/fragment_edit_expense">
+        <argument
+            android:name="expenseId"
+            app:argType="integer" />
+    </fragment>
 
     <!-- Monthly History Fragment -->
     <fragment

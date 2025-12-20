@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 // Implement the listener from the bottom sheet
-public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpenseClickListener, MonthYearBottomSheet.OnMonthSelectedListener {
+public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpenseActionsListener, MonthYearBottomSheet.OnMonthSelectedListener {
 
     // Header Views
     private TextView tvWelcome, tvDate;
@@ -180,6 +181,29 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
     public void onExpenseClick(Expense expense) {
         // Here you can handle editing or deleting an expense
         Toast.makeText(getContext(), "Dépense: " + expense.getCategory() + " de " + expense.getAmount() + " MAD", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteClick(Expense expense) {
+        // Show a confirmation dialog before deleting
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Supprimer la dépense")
+                .setMessage("Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action est irréversible.")
+                .setPositiveButton("Supprimer", (dialog, which) -> {
+                    viewModel.deleteExpense(expense);
+                    Toast.makeText(getContext(), "Dépense supprimée", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Annuler", null)
+                .setIcon(R.drawable.ic_delete)
+                .show();
+    }
+
+    @Override
+    public void onModifyClick(Expense expense) {
+        // Navigate to EditExpenseFragment, passing the expense ID
+        ExpenseFragmentDirections.ActionExpensesToEditExpense action =
+                ExpenseFragmentDirections.actionExpensesToEditExpense(expense.getId());
+        Navigation.findNavController(requireView()).navigate(action);
     }
 
     // This method is called when a month is selected in the bottom sheet

@@ -30,8 +30,16 @@ public class ExpenseRepository {
         executor.execute(() -> expenseDao.insert(expense));
     }
 
+    public void update(Expense expense) {
+        executor.execute(() -> expenseDao.update(expense));
+    }
+
     public void delete(Expense expense) {
         executor.execute(() -> expenseDao.delete(expense));
+    }
+
+    public LiveData<Expense> getExpenseById(int id) {
+        return expenseDao.getExpenseById(id);
     }
 
     // ==================== GET EXPENSES ====================
