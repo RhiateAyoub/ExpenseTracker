@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+
 import com.example.expensetracker.R;
 import com.example.expensetracker.utils.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -23,6 +26,7 @@ public class HomeFragment extends Fragment {
 
     // Header
     private TextView tvWelcome, tvDate;
+    private ImageButton btnLogout;
 
     // Sections
     private LinearLayout noBudgetSection, positiveSection, negativeSection;
@@ -59,6 +63,8 @@ public class HomeFragment extends Fragment {
                 Navigation.findNavController(v).navigate(R.id.action_home_to_addExpense)
         );
 
+        btnLogout.setOnClickListener(v -> logoutUser());
+
         return view;
     }
 
@@ -66,6 +72,7 @@ public class HomeFragment extends Fragment {
         // Header
         tvWelcome = view.findViewById(R.id.tvWelcome);
         tvDate = view.findViewById(R.id.tvDate);
+        btnLogout = view.findViewById(R.id.btnLogout);
 
         // Sections
         noBudgetSection = view.findViewById(R.id.noBudgetSection);
@@ -95,6 +102,13 @@ public class HomeFragment extends Fragment {
 
         SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy", Locale.FRANCE);
         tvDate.setText(sdf.format(Calendar.getInstance().getTime()));
+    }
+
+    private void logoutUser() {
+        sessionManager.logout();
+        // Navigate to login screen and clear the back stack
+        NavHostFragment.findNavController(this)
+                .navigate(R.id.action_global_to_loginFragment);
     }
 
     private void setupObservers() {

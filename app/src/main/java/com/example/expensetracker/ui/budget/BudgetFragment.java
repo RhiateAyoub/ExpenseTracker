@@ -22,11 +22,13 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import androidx.navigation.fragment.NavHostFragment;
 
 public class BudgetFragment extends Fragment {
 
     // Header Views
     private TextView tvWelcome, tvDate;
+    private ImageButton btnLogout;
 
     // Other Views
     private TextView tvMonthName, tvExpensesValue, tvBudgetValue, tvBalanceValue;
@@ -68,6 +70,7 @@ public class BudgetFragment extends Fragment {
         // Header
         tvWelcome = view.findViewById(R.id.tvWelcome);
         tvDate = view.findViewById(R.id.tvDate);
+        btnLogout = view.findViewById(R.id.btnLogout);
 
         // Other views
         tvMonthName = view.findViewById(R.id.tvMonthName);
@@ -97,6 +100,13 @@ public class BudgetFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy", new Locale("fr", "FR"));
         String currentDate = sdf.format(Calendar.getInstance().getTime());
         tvDate.setText(currentDate);
+    }
+
+    private void logoutUser() {
+        sessionManager.logout();
+        // Use the global action to navigate
+        NavHostFragment.findNavController(this)
+                .navigate(R.id.action_global_to_loginFragment);
     }
 
     // ... (keep the rest of the existing methods: setupObservers, updateUI, setupClickListeners, etc.)
@@ -136,6 +146,7 @@ public class BudgetFragment extends Fragment {
     }
 
     private void setupClickListeners() {
+        btnLogout.setOnClickListener(v -> logoutUser());
         btnModifier.setOnClickListener(v -> switchToEditMode());
         btnEnregistrer.setOnClickListener(v -> saveBudget());
         btnAnnuler.setOnClickListener(v -> switchToDisplayMode());

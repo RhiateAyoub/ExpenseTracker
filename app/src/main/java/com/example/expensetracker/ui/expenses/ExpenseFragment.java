@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.expensetracker.R;
@@ -30,6 +31,7 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
 
     // Header Views
     private TextView tvWelcome, tvDate;
+    private ImageButton btnLogout;
 
     // Other Views
     private TextView tvSelectedMonth;
@@ -67,6 +69,7 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         // Header
         tvWelcome = view.findViewById(R.id.tvWelcome);
         tvDate = view.findViewById(R.id.tvDate);
+        btnLogout = view.findViewById(R.id.btnLogout);
 
         // Other Views
         tvSelectedMonth = view.findViewById(R.id.tvSelectedMonth);
@@ -77,6 +80,7 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         btnNextMonth = view.findViewById(R.id.btnNextMonth);
         fabAddExpense = view.findViewById(R.id.fabAddExpense);
 
+        btnLogout.setOnClickListener(v -> logoutUser());
         fabAddExpense.setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_expenses_to_addExpense)
         );
@@ -97,6 +101,13 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy", new Locale("fr", "FR"));
         String currentDate = sdf.format(Calendar.getInstance().getTime());
         tvDate.setText(currentDate);
+    }
+
+    private void logoutUser() {
+        sessionManager.logout();
+        // Use the global action to navigate
+        NavHostFragment.findNavController(this)
+                .navigate(R.id.action_global_to_loginFragment);
     }
 
     private void setupRecyclerView() {

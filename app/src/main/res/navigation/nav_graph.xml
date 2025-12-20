@@ -47,6 +47,11 @@
     </fragment>
 
     <!-- ==================== MAIN APP FRAGMENTS ==================== -->
+    <action
+        android:id="@+id/action_global_to_loginFragment"
+        app:destination="@id/loginFragment"
+        app:popUpTo="@id/nav_graph"
+        app:popUpToInclusive="true" />
 
     <!-- Home Fragment -->
     <fragment
