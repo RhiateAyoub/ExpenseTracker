@@ -5,6 +5,12 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
+    <!-- Add this Activity entry -->
+    <activity
+        android:id="@+id/splashActivity"
+        android:name="com.example.expensetracker.ui.auth.SplashActivity"
+        android:label="SplashActivity" />
+
     <!-- ==================== AUTHENTICATION FRAGMENTS ==================== -->
 
     <!-- Login Fragment -->

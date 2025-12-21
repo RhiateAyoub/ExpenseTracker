@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Splash Screen Theme for API 31 and above -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- These attributes are from the compatibility library, so no "android:" prefix -->
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_wrapper</item>
+        <item name="postSplashScreenTheme">@style/Theme.ExpenseTracker</item>
+
+        <!--
+        THIS IS THE FIX:
+        This attribute is from the Android framework, so it needs the "android:" prefix.
+        -->
+        <item name="android:windowSplashScreenBrandingImage">@drawable/ic_app_name_brand</item>
+    </style>
+
+</resources>
