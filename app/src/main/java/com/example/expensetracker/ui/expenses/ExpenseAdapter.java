@@ -97,7 +97,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         }
 
         // Set amount
-        holder.tvExpenseAmount.setText(String.format(Locale.FRENCH, "-%.0f MAD", expense.getAmount()));
+        holder.tvExpenseAmount.setText(String.format(Locale.FRENCH, "-%.2f MAD", expense.getAmount()));
 
         // Click listener to hide actions when tapping outside
         holder.itemView.setOnClickListener(v -> {

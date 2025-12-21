@@ -163,7 +163,7 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnExpens
         for (Expense expense : expenses) {
             total += expense.getAmount();
         }
-        tvMonthTotal.setText(String.format(Locale.FRENCH, "Total: %.0f MAD", total));
+        tvMonthTotal.setText(String.format(Locale.FRENCH, "Total: %.2f MAD", total));
     }
 
     // Method to show the bottom sheet

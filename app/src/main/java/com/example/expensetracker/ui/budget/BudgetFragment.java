@@ -135,9 +135,9 @@ public class BudgetFragment extends Fragment {
         double balance = currentBudgetAmount - currentExpensesAmount;
 
         // Update values in the UI
-        tvExpensesValue.setText(String.format(Locale.FRENCH, "%.0f", currentExpensesAmount));
+        tvExpensesValue.setText(String.format(Locale.FRENCH, "%.2f", currentExpensesAmount));
         tvBudgetValue.setText(String.format(Locale.FRENCH, "%.0f", currentBudgetAmount));
-        tvBalanceValue.setText(String.format(Locale.FRENCH, "%.0f", balance));
+        tvBalanceValue.setText(String.format(Locale.FRENCH, "%.2f", balance));
         tvBudgetAmount.setText(String.format(Locale.FRENCH, "%.0f MAD", currentBudgetAmount));
 
         // Color balance based on positive/negative

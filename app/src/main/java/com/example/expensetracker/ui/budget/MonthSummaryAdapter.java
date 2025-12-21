@@ -64,11 +64,11 @@ public class MonthSummaryAdapter extends RecyclerView.Adapter<MonthSummaryAdapte
 
         void bind(MonthSummary summary, OnMonthClickListener listener) {
             tvMonthYear.setText(summary.getMonthYear());
-            tvExpenses.setText(String.format(Locale.FRENCH, "%.0f MAD", summary.getExpenses()));
+            tvExpenses.setText(String.format(Locale.FRENCH, "%.2f MAD", summary.getExpenses()));
             tvBudget.setText(String.format(Locale.FRENCH, "%.0f MAD", summary.getBudget()));
 
             double balance = summary.getBalance();
-            tvBalance.setText(String.format(Locale.FRENCH, "%.0f MAD", balance));
+            tvBalance.setText(String.format(Locale.FRENCH, "%.2f MAD", balance));
 
             int colorRes = (balance >= 0) ? R.color.primary_green : R.color.red_strong;
             tvBalance.setTextColor(ContextCompat.getColor(itemView.getContext(), colorRes));

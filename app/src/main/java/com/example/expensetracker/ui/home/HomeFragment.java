@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment {
         }
 
         // Update Card 1: Expenses of the month
-        tvExpensesAmount.setText(String.format(Locale.FRENCH, "%.0f MAD", data.currentMonthExpenses));
+        tvExpensesAmount.setText(String.format(Locale.FRENCH, "%.2f MAD", data.currentMonthExpenses));
         tvExpensesPercentage.setText(String.format(Locale.FRENCH, "%.0f%% du budget mensuel", data.expensePercentageOfBudget));
 
         // Update Card 2: Most expensive category
@@ -159,13 +159,13 @@ public class HomeFragment extends Fragment {
             balanceCard.setBackgroundResource(R.drawable.card_positive);
             tvBalanceAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_green));
             tvBalancePercentageText.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_green));
-            tvBalanceAmount.setText(String.format(Locale.FRENCH, "+%.0f MAD", predictedBalance));
+            tvBalanceAmount.setText(String.format(Locale.FRENCH, "+%.2f MAD", predictedBalance));
             tvBalancePercentageText.setText(String.format(Locale.FRENCH, "+%.0f%% du budget mensuel", percentage));
         } else {
             balanceCard.setBackgroundResource(R.drawable.card_negative);
             tvBalanceAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_strong));
             tvBalancePercentageText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red_strong));
-            tvBalanceAmount.setText(String.format(Locale.FRENCH, "%.0f MAD", predictedBalance)); // No plus sign for negative
+            tvBalanceAmount.setText(String.format(Locale.FRENCH, "%.2f MAD", predictedBalance)); // No plus sign for negative
             tvBalancePercentageText.setText(String.format(Locale.FRENCH, "-%.0f%% du budget mensuel", percentage));
         }
     }

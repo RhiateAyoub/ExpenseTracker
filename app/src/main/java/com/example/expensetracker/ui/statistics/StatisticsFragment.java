@@ -138,7 +138,7 @@ public class StatisticsFragment extends Fragment implements MonthYearBottomSheet
         pieChart.getLegend().setEnabled(false);
 
         // Set total expenses text in the center
-        pieChart.setCenterText(String.format(Locale.FRENCH, "%.0f\nMAD", totalExpenses));
+        pieChart.setCenterText(String.format(Locale.FRENCH, "%.2f\nMAD", totalExpenses));
         pieChart.setCenterTextSize(20f);
         pieChart.setCenterTextTypeface(getResources().getFont(R.font.inter_semibold));
         pieChart.setCenterTextColor(Color.BLACK);
