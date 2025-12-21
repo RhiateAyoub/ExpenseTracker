@@ -174,6 +174,17 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
                 return R.drawable.ic_health;
             case "divertissement":
                 return R.drawable.ic_entertainment;
+            case "éducation":
+                return R.drawable.ic_education;
+            case "vêtements":
+                return R.drawable.ic_clothing;
+            case "snacks":
+                return R.drawable.ic_snack;
+            case "abonnements":
+                return R.drawable.ic_subscription;
+            case "logement":
+                return R.drawable.ic_home;
+            case "autre":
             default:
                 return R.drawable.ic_other;
         }

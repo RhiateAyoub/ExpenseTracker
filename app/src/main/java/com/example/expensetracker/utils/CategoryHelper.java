@@ -48,6 +48,12 @@ public class CategoryHelper {
         categories.add(new Category("Restauration", R.drawable.ic_restaurant));
         categories.add(new Category("Santé", R.drawable.ic_health));
         categories.add(new Category("Divertissement", R.drawable.ic_entertainment));
+        categories.add(new Category("Logement", R.drawable.ic_home));
+        categories.add(new Category("Autre", R.drawable.ic_other));
+        categories.add(new Category("Éducation", R.drawable.ic_education));
+        categories.add(new Category("Vêtements", R.drawable.ic_clothing));
+        categories.add(new Category("Snacks", R.drawable.ic_snack));
+        categories.add(new Category("Abonnements", R.drawable.ic_subscription));
         // Add more categories as needed
         return categories;
     }
