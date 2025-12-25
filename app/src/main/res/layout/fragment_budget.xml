@@ -369,15 +369,6 @@
                         </LinearLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
-
-                <!-- BOUTON DE TEST TEMPORAIRE -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnTestNotification"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="24dp"
-                    android:text="Tester Notification (10s)" />
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -4,7 +4,6 @@ import android.app.Application;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -63,21 +62,5 @@ public class MainApplication extends Application {
                 ExistingPeriodicWorkPolicy.KEEP, // Garde l'ancienne si elle existe déjà
                 notificationWorkRequest
         );
-    }
-
-    /**
-     * Planifie une notification de test qui se déclenche dans 10 secondes.
-     * C'est la méthode que nous appellerons pour les tests.
-     */
-    public void scheduleTestNotification() {
-        // Création d'une requête de travail unique (non récurrente)
-        OneTimeWorkRequest testWorkRequest =
-                new OneTimeWorkRequest.Builder(NotificationWorker.class)
-                        .setInitialDelay(10, TimeUnit.SECONDS) // Déclenchement dans 10 secondes
-                        .addTag("TestNotification")
-                        .build();
-
-        // Soumet la tâche de test à WorkManager
-        WorkManager.getInstance(this).enqueue(testWorkRequest);
     }
 }
