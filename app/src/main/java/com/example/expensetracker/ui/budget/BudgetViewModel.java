@@ -1,9 +1,11 @@
 package com.example.expensetracker.ui.budget;
 
-import android.app.Application;import androidx.annotation.NonNull;
+import android.app.Application;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.LiveData;import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.expensetracker.data.entity.Budget;
 import com.example.expensetracker.data.entity.Expense;
 import com.example.expensetracker.data.repository.BudgetRepository;
@@ -17,12 +19,11 @@ public class BudgetViewModel extends AndroidViewModel {
     private final ExpenseRepository expenseRepository;
 
     private int userId;
-    private Calendar currentMonth;
+    private final MutableLiveData<Calendar> selectedMonth = new MutableLiveData<>();
 
     private LiveData<Budget> budgetForMonth;
     private LiveData<List<Expense>> expensesForMonth;
 
-    // LiveData exposed to the Fragment
     public MediatorLiveData<Double> totalExpenses = new MediatorLiveData<>();
     public MediatorLiveData<Budget> budget = new MediatorLiveData<>();
 
@@ -30,18 +31,35 @@ public class BudgetViewModel extends AndroidViewModel {
         super(application);
         budgetRepository = new BudgetRepository(application);
         expenseRepository = new ExpenseRepository(application);
-        currentMonth = Calendar.getInstance();
+        selectedMonth.setValue(Calendar.getInstance()); // Default to current month
     }
 
-    /**
-     * Initializes the ViewModel with the user ID and loads the data for the current month.
-     */
-    public void loadData(int userId) {
-        this.userId = userId;
-        int year = currentMonth.get(Calendar.YEAR);
-        int month = currentMonth.get(Calendar.MONTH);
+    public LiveData<Calendar> getSelectedMonth() {
+        return selectedMonth;
+    }
 
-        // Get LiveData sources from repositories
+    public void init(int userId) {
+        this.userId = userId;
+        // Observe changes in selectedMonth to reload data
+        selectedMonth.observeForever(this::loadDataForMonth);
+        loadDataForMonth(selectedMonth.getValue()); // Initial load
+    }
+
+    private void loadDataForMonth(Calendar calendar) {
+        if (calendar == null) return;
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+
+        // Remove previous sources to avoid memory leaks and unwanted updates
+        if (budgetForMonth != null) {
+            budget.removeSource(budgetForMonth);
+        }
+        if (expensesForMonth != null) {
+            totalExpenses.removeSource(expensesForMonth);
+        }
+
+        // Get new LiveData sources from repositories for the selected month
         budgetForMonth = budgetRepository.getBudgetForMonthLive(userId, year, month);
         expensesForMonth = expenseRepository.getExpensesForMonthLive(userId, year, month);
 
@@ -60,14 +78,38 @@ public class BudgetViewModel extends AndroidViewModel {
         });
     }
 
-    /**
-     * Saves or updates the budget for the current month.
-     */
     public void saveBudget(double amount) {
-        int year = currentMonth.get(Calendar.YEAR);
-        int month = currentMonth.get(Calendar.MONTH);
-        // We create a new budget object to pass to the repository
+        Calendar calendar = selectedMonth.getValue();
+        if (calendar == null) return;
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
         Budget newBudget = new Budget(userId, amount, year, month, System.currentTimeMillis());
         budgetRepository.saveBudget(newBudget);
+    }
+
+    public void changeMonth(int amount) {
+        Calendar current = selectedMonth.getValue();
+        if (current != null) {
+            Calendar newDate = (Calendar) current.clone();
+            newDate.add(Calendar.MONTH, amount);
+            selectedMonth.setValue(newDate);
+        }
+    }
+
+    public void setMonth(int year, int month) {
+        Calendar current = selectedMonth.getValue();
+        if (current != null) {
+            Calendar newDate = (Calendar) current.clone();
+            newDate.set(Calendar.YEAR, year);
+            newDate.set(Calendar.MONTH, month);
+            selectedMonth.setValue(newDate);
+        }
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        selectedMonth.removeObserver(this::loadDataForMonth);
     }
 }
