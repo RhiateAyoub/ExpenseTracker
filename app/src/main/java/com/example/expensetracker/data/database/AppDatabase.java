@@ -26,9 +26,10 @@ import com.example.expensetracker.data.entity.User;
  * - Database version number (increment this when you change schema)
  * - exportSchema = false means don't save schema history (fine for development)
  */
+
 @Database(
         entities = {User.class, Budget.class, Expense.class},
-        version = 1,
+        version = 2, // version 2 ICI
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {

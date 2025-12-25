@@ -51,6 +51,8 @@ public class User {
     @ColumnInfo(name = "full_name")
     private String fullName;
 
+    @ColumnInfo(name = "email")
+    private String email;
     /**
      * Account creation timestamp
      * Stored as milliseconds since Unix epoch (January 1, 1970)
@@ -59,6 +61,10 @@ public class User {
     @ColumnInfo(name = "created_at")
     private long createdAt;
 
+    // ... champs existants (id, username, email, etc.)
+
+    @ColumnInfo(name = "is_verified")
+    private boolean isVerified;
     // ==================== CONSTRUCTORS ====================
 
     /**
@@ -71,12 +77,14 @@ public class User {
      * Constructor for creating a new user
      * ID is auto-generated, so we don't include it here
      */
-    public User(String username, String password, String fullName, long createdAt) {
+    public User(String username, String password, String fullName, String email, long createdAt) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
+        this.email = email; // Nouveau champ
         this.createdAt = createdAt;
     }
+
 
     // ==================== GETTERS AND SETTERS ====================
     // Room needs these to read/write data
@@ -120,9 +128,12 @@ public class User {
     public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
     }
-
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
     // ==================== HELPER METHODS ====================
-
+    // Getter et Setter
+    public boolean isVerified() { return isVerified; }
+    public void setVerified(boolean verified) { isVerified = verified; }
     /**
      * Returns the display name for the user
      * If fullName is set, use it; otherwise use username

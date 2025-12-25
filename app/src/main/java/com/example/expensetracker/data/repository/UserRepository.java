@@ -11,6 +11,8 @@ import com.example.expensetracker.data.dao.UserDao;
 import com.example.expensetracker.data.entity.User;
 import com.example.expensetracker.utils.PasswordUtil;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,24 +77,31 @@ public class UserRepository {
      *     }
      * });
      */
-    public void register(String username, String password, String fullName, RegisterCallback callback) {
+    public void register(String username, String password, String fullName, String Email, RegisterCallback callback) {
         executorService.execute(() -> {
             try {
-                // Check if username already exists
+                // 1. Vérifier si le username existe déjà
                 if (userDao.checkUsernameExists(username) > 0) {
                     callback.onError("Ce nom d'utilisateur existe déjà");
+                    return;
+                }
+
+                // 2. AJOUTÉ : Vérifier si l'email existe déjà (Important !)
+                if (userDao.checkEmailExists(Email) > 0) {
+                    callback.onError("Cet email est déjà utilisé");
                     return;
                 }
 
                 // Hash password
                 String hashedPassword = PasswordUtil.hashPassword(password);
 
-                // Create user
-                User user = new User(username, hashedPassword, fullName, System.currentTimeMillis());
+                // 3. CORRIGÉ : Ajout du paramètre 'Email' dans le constructeur User
+                // Assurez-vous que votre User.java a bien ce constructeur !
+                User user = new User(username, hashedPassword, fullName, Email, System.currentTimeMillis());
+
                 long userId = userDao.insert(user);
 
                 if (userId > 0) {
-                    // After successful insert, get the full user object to return
                     User newUser = userDao.getUserById((int) userId);
                     callback.onSuccess(newUser);
                 } else {
@@ -105,6 +114,7 @@ public class UserRepository {
         });
     }
 
+
     /**
      * Login user
      *
@@ -113,7 +123,7 @@ public class UserRepository {
      * 2. Verify password
      * 3. Return user if successful
      *
-     * @param username - Username
+     * @param identifier - Username
      * @param password - Plain password
      * @param callback - Callback with result
      *
@@ -130,31 +140,39 @@ public class UserRepository {
      *     }
      * });
      */
-    public void login(String username, String password, LoginCallback callback) {
+    // AJOUT : On passe le callback en paramètre
+    public void login(String identifier, String password, LoginCallback callback) {
+        // AJOUT : On enveloppe tout le code dans l'executorService pour passer en arrière-plan
         executorService.execute(() -> {
             try {
-                // Get user from database
-                User user = userDao.getUserByUsername(username);
+                // Cette ligne causait le crash car elle accédait à la BD sur le main thread
+                User user = userDao.findUserForLogin(identifier);
 
-                if (user == null) {
-                    callback.onError("Nom d'utilisateur ou mot de passe incorrect");
-                    return;
-                }
-
-                // Verify password
-                boolean passwordMatches = PasswordUtil.verifyPassword(password, user.getPassword());
-
-                if (passwordMatches) {
+                if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+                    // Succès
                     callback.onSuccess(user);
                 } else {
-                    callback.onError("Nom d'utilisateur ou mot de passe incorrect");
+                    // Échec (mot de passe ou user incorrect)
+                    callback.onError("Identifiant ou mot de passe incorrect");
                 }
-
             } catch (Exception e) {
-                callback.onError("Erreur: " + e.getMessage());
+                // Gestion des erreurs imprévues
+                callback.onError("Erreur de connexion : " + e.getMessage());
             }
         });
     }
+    public void checkIfUserExists(String username, String email, CheckCallback callback) {
+        executorService.execute(() -> {
+            if (userDao.checkUsernameExists(username) > 0) {
+                callback.onResult(true, "Ce nom d'utilisateur est déjà pris.");
+            } else if (userDao.checkEmailExists(email) > 0) {
+                callback.onResult(true, "Cet email est déjà utilisé.");
+            } else {
+                callback.onResult(false, ""); // N'existe pas, c'est bon
+            }
+        });
+    }
+
 
     // ==================== USER OPERATIONS ====================
 
@@ -292,5 +310,9 @@ public class UserRepository {
     public interface UpdateCallback {
         void onSuccess();
         void onError(String error);
+    }
+    // Callback for checkIfUserExists
+    public interface CheckCallback {
+        void onResult(boolean exists, String message);
     }
 }
