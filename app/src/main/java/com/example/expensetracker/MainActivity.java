@@ -1,9 +1,16 @@
 package com.example.expensetracker;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.splashscreen.SplashScreen; // <-- IMPORT THIS
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
@@ -21,6 +28,15 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isReady = false;
 
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // La permission est accordée.
+                } else {
+                    // L'utilisateur a refusé. Vous pouvez afficher un message expliquant pourquoi la notif est utile.
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // ==================== STEP 1: INSTALL SPLASH SCREEN ====================
@@ -29,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Demande la permission pour les notifications
+        askNotificationPermission();
 
         // ==================== INITIALIZATION (no changes here) =================
         sessionManager = new SessionManager(this);
@@ -79,6 +98,16 @@ public class MainActivity extends AppCompatActivity {
 
             bottomNavigation.setVisibility(isAuthScreen ? View.GONE : View.VISIBLE);
         });
+    }
+
+    private void askNotificationPermission() {
+        // Uniquement pour Android 13 (TIRAMISU) et plus
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // Demande la permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
     }
 
     @Override

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- fragment_budget.xml -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,13 +17,13 @@
             android:paddingTop="32dp"
             android:paddingBottom="80dp">
 
-            <!-- HEADER SECTION -->
+            <!-- HEADER SECTION (Inchangé) -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="24dp"
                 android:paddingEnd="24dp">
-
+                <!-- ... (contenu du header inchangé) ... -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -64,7 +62,6 @@
                     android:padding="6dp"
                     android:scaleType="fitCenter"
                     android:contentDescription="Déconnexion"/>
-
             </RelativeLayout>
 
             <!-- CARDS SECTION -->
@@ -79,7 +76,7 @@
                 android:clipToPadding="false"
                 android:clipChildren="false">
 
-                <!-- CARD 1: Current Month Overview -->
+                <!-- CARD 1: APERÇU DU MOIS EN COURS (design original) -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardMonthOverview"
                     android:layout_width="match_parent"
@@ -97,7 +94,7 @@
                         android:padding="20dp"
                         android:background="@color/white">
 
-                        <!-- Month Header -->
+                        <!-- TITRE ET BOUTON HISTORIQUE -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -106,11 +103,11 @@
                             android:layout_marginBottom="20dp">
 
                             <TextView
-                                android:id="@+id/tvMonthName"
+                                android:id="@+id/tvCurrentMonthTitle"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Novembre"
+                                android:text="Aperçu de ce mois"
                                 android:textSize="22sp"
                                 android:fontFamily="@font/inter_semibold"
                                 android:textColor="@color/black"/>
@@ -122,103 +119,89 @@
                                 android:src="@drawable/ic_chevron_right"
                                 android:background="?attr/selectableItemBackgroundBorderless"
                                 android:scaleType="fitCenter"
-                                android:contentDescription="Voir détails"/>
+                                app:tint="@color/gray_dark"
+                                android:contentDescription="Voir l'historique"/>
                         </LinearLayout>
 
-                        <!-- Stats Container (3 columns) -->
+                        <!-- STATS DU MOIS EN COURS -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
-
-                            <!-- Column 1: Dépenses -->
+                            <!-- Dépenses -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
                                 android:gravity="start">
-
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Dépenses"
                                     android:textSize="13sp"
-                                    android:fontFamily="@font/inter_regular"
                                     android:textColor="@color/gray_dark"
                                     android:layout_marginBottom="6dp"/>
-
                                 <TextView
                                     android:id="@+id/tvExpensesValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="925"
+                                    android:text="0"
                                     android:textSize="24sp"
                                     android:fontFamily="@font/inter_semibold"
                                     android:textColor="@color/black"/>
                             </LinearLayout>
-
-                            <!-- Column 2: Budget -->
+                            <!-- Budget -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
                                 android:gravity="center">
-
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Budget"
                                     android:textSize="13sp"
-                                    android:fontFamily="@font/inter_regular"
                                     android:textColor="@color/gray_dark"
                                     android:layout_marginBottom="6dp"/>
-
                                 <TextView
                                     android:id="@+id/tvBudgetValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="1000"
+                                    android:text="0"
                                     android:textSize="24sp"
                                     android:fontFamily="@font/inter_semibold"
                                     android:textColor="@color/black"/>
                             </LinearLayout>
-
-                            <!-- Column 3: Solde -->
+                            <!-- Solde -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
                                 android:gravity="end">
-
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Solde"
                                     android:textSize="13sp"
-                                    android:fontFamily="@font/inter_regular"
                                     android:textColor="@color/gray_dark"
                                     android:layout_marginBottom="6dp"/>
-
                                 <TextView
                                     android:id="@+id/tvBalanceValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="75"
+                                    android:text="0"
                                     android:textSize="24sp"
                                     android:fontFamily="@font/inter_semibold"
                                     android:textColor="@color/primary_green"/>
                             </LinearLayout>
-
                         </LinearLayout>
-
                     </LinearLayout>
-
                 </androidx.cardview.widget.CardView>
 
-                <!-- CARD 2: Budget Editor -->
+                <!-- CARD 2: GESTIONNAIRE DE BUDGET (dynamique) -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardBudgetEditor"
                     android:layout_width="match_parent"
@@ -234,6 +217,58 @@
                         android:orientation="vertical"
                         android:padding="20dp"
                         android:background="@color/white">
+
+                        <!-- SÉLECTEUR DE MOIS INTÉGRÉ ICI -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageButton
+                                android:id="@+id/btnPreviousMonth"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_chevron_left"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="Mois précédent"/>
+
+                            <LinearLayout
+                                android:id="@+id/monthSelector"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:paddingVertical="8dp"
+                                android:background="?attr/selectableItemBackground">
+
+                                <TextView
+                                    android:id="@+id/tvMonthName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Novembre 2025"
+                                    android:textSize="22sp"
+                                    android:fontFamily="@font/inter_semibold"
+                                    android:textColor="@color/black"/>
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_dropdown"
+                                    android:layout_marginStart="8dp"
+                                    app:tint="@color/black"/>
+                            </LinearLayout>
+
+                            <ImageButton
+                                android:id="@+id/btnNextMonth"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_chevron_right"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="Mois suivant"/>
+                        </LinearLayout>
 
                         <!-- Budget Header -->
                         <LinearLayout
@@ -259,7 +294,6 @@
                             android:id="@+id/displayMode"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
                             android:gravity="center_vertical">
 
                             <TextView
@@ -267,7 +301,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="1000 MAD"
+                                android:text="0 MAD"
                                 android:textSize="28sp"
                                 android:fontFamily="@font/inter_semibold"
                                 android:textColor="@color/black"/>
@@ -281,13 +315,10 @@
                                 android:fontFamily="@font/inter_semibold"
                                 android:textColor="@color/primary"
                                 android:padding="8dp"
-                                android:clickable="true"
-                                android:focusable="true"
                                 android:background="?attr/selectableItemBackground"/>
                         </LinearLayout>
 
-
-                        <!-- Edit Mode (hidden by default) -->
+                        <!-- Edit Mode -->
                         <LinearLayout
                             android:id="@+id/editMode"
                             android:layout_width="match_parent"
@@ -298,31 +329,19 @@
                             <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="16dp"
-                                app:boxBackgroundMode="outline"
-                                app:boxCornerRadiusTopStart="8dp"
-                                app:boxCornerRadiusTopEnd="8dp"
-                                app:boxCornerRadiusBottomStart="8dp"
-                                app:boxCornerRadiusBottomEnd="8dp"
-                                app:boxStrokeColor="@color/text_input_box_stroke">
+                                android:layout_marginBottom="12dp">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/etBudgetInput"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Montant du budget"
-                                    android:text="1000"
-                                    android:inputType="numberDecimal"
-                                    android:textSize="18sp"
-                                    android:fontFamily="@font/inter_regular"
-                                    android:textColor="@color/black"/>
+                                    android:hint="Entrer le budget"
+                                    android:inputType="numberDecimal"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
-                            <!-- Action Buttons -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal"
                                 android:gravity="end">
 
                                 <TextView
@@ -330,12 +349,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Annuler"
-                                    android:textSize="16sp"
-                                    android:fontFamily="@font/inter_medium"
                                     android:textColor="@color/gray_dark"
-                                    android:padding="12dp"
-                                    android:clickable="true"
-                                    android:focusable="true"
+                                    android:textSize="16sp"
+                                    android:padding="8dp"
                                     android:background="?attr/selectableItemBackground"/>
 
                                 <TextView
@@ -343,29 +359,20 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Enregistrer"
+                                    android:textColor="@color/primary"
                                     android:textSize="16sp"
                                     android:fontFamily="@font/inter_semibold"
-                                    android:textColor="@color/primary"
-                                    android:padding="12dp"
-                                    android:layout_marginStart="8dp"
-                                    android:clickable="true"
-                                    android:focusable="true"
+                                    android:padding="8dp"
+                                    android:layout_marginStart="12dp"
                                     android:background="?attr/selectableItemBackground"/>
                             </LinearLayout>
-
                         </LinearLayout>
-
                     </LinearLayout>
-
                 </androidx.cardview.widget.CardView>
-
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddExpense"
         android:layout_width="wrap_content"
