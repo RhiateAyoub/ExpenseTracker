@@ -16,9 +16,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+
+import com.example.expensetracker.MainApplication;
 import com.example.expensetracker.R;
 import com.example.expensetracker.ui.expenses.MonthYearBottomSheet;
 import com.example.expensetracker.utils.SessionManager;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import java.text.SimpleDateFormat;
@@ -43,6 +46,7 @@ public class BudgetFragment extends Fragment implements MonthYearBottomSheet.OnM
     private LinearLayout displayMode, editMode;
     private ImageButton btnMonthDetails;
     private FloatingActionButton fabAddExpense;
+    private MaterialButton btnTestNotification;
 
     private BudgetViewModel viewModel;
     private SessionManager sessionManager;
@@ -90,6 +94,7 @@ public class BudgetFragment extends Fragment implements MonthYearBottomSheet.OnM
         editMode = view.findViewById(R.id.editMode);
         btnMonthDetails = view.findViewById(R.id.btnMonthDetails);
         fabAddExpense = view.findViewById(R.id.fabAddExpense);
+        btnTestNotification = view.findViewById(R.id.btnTestNotification);
     }
 
     private void setupDynamicHeader() {
@@ -154,6 +159,12 @@ public class BudgetFragment extends Fragment implements MonthYearBottomSheet.OnM
         fabAddExpense.setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_budget_to_addExpense)
         );
+
+        // Ajoutez le listener pour le bouton de test
+        btnTestNotification.setOnClickListener(v -> {
+            ((MainApplication) requireActivity().getApplication()).scheduleTestNotification();
+            Toast.makeText(getContext(), "Notification de test programmée dans 10 secondes.", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void showMonthPicker() {
