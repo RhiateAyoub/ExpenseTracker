@@ -277,6 +277,30 @@ public class UserRepository {
             }
         });
     }
+    // AJOUTEZ CETTE MÉTHODE
+    public void resetPasswordByEmail(String email, String newPassword, UpdateCallback callback) {
+        executorService.execute(() -> {
+            try {
+                // 1. Trouver l'utilisateur par email (besoin d'ajouter cette requête dans DAO si elle manque)
+                // Pour l'instant, utilisons une méthode qui cherche par identifier (username ou email)
+                User user = userDao.findUserForLogin(email);
+
+                if (user != null) {
+                    // 2. Hasher le nouveau mot de passe
+                    String hashedPassword = PasswordUtil.hashPassword(newPassword);
+                    user.setPassword(hashedPassword);
+
+                    // 3. Mettre à jour
+                    userDao.update(user);
+                    callback.onSuccess();
+                } else {
+                    callback.onError("Utilisateur introuvable.");
+                }
+            } catch (Exception e) {
+                callback.onError("Erreur : " + e.getMessage());
+            }
+        });
+    }
 
     // ==================== CALLBACKS ====================
 

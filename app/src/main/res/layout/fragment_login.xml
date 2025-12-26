@@ -59,6 +59,14 @@
                     android:hint="Mot de passe"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/tvForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mot de passe oublié ?"
+                android:textColor="@color/primary"
+                android:layout_gravity="end"
+                android:layout_marginBottom="16dp" />
 
             <!-- Bouton Se connecter -->
             <com.google.android.material.button.MaterialButton

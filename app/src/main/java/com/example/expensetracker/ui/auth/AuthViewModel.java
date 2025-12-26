@@ -20,9 +20,12 @@ public class AuthViewModel extends AndroidViewModel {
     public MutableLiveData<User> authSuccess = new MutableLiveData<>();
     public MutableLiveData<String> error = new MutableLiveData<>();
     public MutableLiveData<Boolean> codeSentSuccess = new MutableLiveData<>(); // Pour dire à la vue d'afficher la popup
-
+    public MutableLiveData<Boolean> passwordResetSuccess = new MutableLiveData<>();
     // Stockage temporaire des données (avant validation)
     private String tempUsername, tempPassword, tempFullName, tempEmail, generatedCode;
+
+
+    private String resetEmail; // Pour se souvenir de l'email pendant le processus
 
     public AuthViewModel(@NonNull Application application) {
         super(application);
@@ -117,5 +120,64 @@ public class AuthViewModel extends AndroidViewModel {
                 error.postValue(message);
             }
         });
+
     }
+    // 1. Demande de réinitialisation (Vérifie si email existe -> Envoie mail)
+    public void sendPasswordResetCode(String email) {
+        // Vérifier si l'utilisateur existe avec cet email
+        repository.checkIfUserExists("", email, new UserRepository.CheckCallback() {
+            @Override
+            public void onResult(boolean exists, String message) {
+                if (exists) {
+                    // L'utilisateur existe, on peut envoyer le code
+                    // (Note: on utilise le message "déjà utilisé" qui signifie ici "email trouvé")
+                    sendVerificationEmailForReset(email);
+                } else {
+                    error.postValue("Aucun compte associé à cet email.");
+                }
+            }
+        });
+    }
+    // Envoi du mail spécifique pour le reset
+    private void sendVerificationEmailForReset(String email) {
+        new Thread(() -> {
+            try {
+                generatedCode = EmailUtil.generateCode();
+                resetEmail = email; // On garde l'email en mémoire pour l'étape finale
+
+                // On réutilise votre EmailUtil existant
+                EmailUtil.sendEmail(email, generatedCode);
+
+                // On utilise le même LiveData que pour l'inscription pour dire "Code envoyé"
+                codeSentSuccess.postValue(true);
+            } catch (Exception e) {
+                error.postValue("Erreur d'envoi : " + e.getMessage());
+            }
+        }).start();
+    }
+    // 2. Vérification du code (Local)
+    public boolean verifyResetCode(String inputCode) {
+        return generatedCode != null && generatedCode.equals(inputCode);
+    }
+
+    // 3. Réinitialisation finale en base de données
+    public void resetPassword(String newPassword) {
+        if (!PasswordUtil.isValidPassword(newPassword)) {
+            error.postValue(PasswordUtil.getPasswordStrengthMessage(newPassword));
+            return;
+        }
+
+        repository.resetPasswordByEmail(resetEmail, newPassword, new UserRepository.UpdateCallback() {
+            @Override
+            public void onSuccess() {
+                passwordResetSuccess.postValue(true);
+            }
+
+            @Override
+            public void onError(String msg) {
+                error.postValue(msg);
+            }
+        });
+    }
+
 }
