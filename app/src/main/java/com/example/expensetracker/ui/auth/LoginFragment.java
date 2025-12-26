@@ -52,6 +52,12 @@ public class LoginFragment extends Fragment {
                         etPassword.getText().toString().trim()
                 )
         );
+        // Dans onCreateView
+        TextView tvForgot = view.findViewById(R.id.tvForgotPassword);
+        tvForgot.setOnClickListener(v ->
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_loginFragment_to_forgotPasswordFragment)
+        );
 
         // Navigate to RegisterFragment when "S'inscrire" is clicked
         tvInscrire.setOnClickListener(v ->

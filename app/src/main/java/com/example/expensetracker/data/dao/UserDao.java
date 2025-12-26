@@ -171,4 +171,10 @@ public interface UserDao {
      */
     @Query("SELECT * FROM users WHERE username LIKE :searchQuery ORDER BY username ASC")
     List<User> searchUsers(String searchQuery);
+    //// :identifier sera ce que l'utilisateur a tapé (ex: "Souhail"ou "Souhail@gmail.com")
+    @Query("SELECT * FROM users WHERE username = :identifier OR email = :identifier LIMIT 1")
+    User findUserForLogin(String identifier);
+    // Ajoutez une vérification pour l'inscription (pour éviter les doublons d'email)
+    @Query("SELECT COUNT(*) FROM users WHERE email = :email")
+    int checkEmailExists(String email);
 }

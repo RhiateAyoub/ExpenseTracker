@@ -36,6 +36,17 @@
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
+    <!-- forgot password fragment -->
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.expensetracker.ui.auth.ForgotPasswordFragment"
+        android:label="Récupération Mot de passe"
+        tools:layout="@layout/fragment_forgot_password" />
+
+        <!-- Actions to navigate to frogot password -->
+        <action
+            android:id="@+id/action_loginFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment" />
 
     <!-- Register Fragment -->
     <fragment

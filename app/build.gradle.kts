@@ -27,6 +27,12 @@ android {
             )
         }
     }
+    packagingOptions {
+        resources {
+            pickFirst("META-INF/NOTICE.md")
+            pickFirst ("META-INF/LICENSE.md")
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -47,6 +53,8 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.splashscreen)
+    implementation("com.sun.mail:android-mail:1.6.7")
+    implementation("com.sun.mail:android-activation:1.6.7")
 //    implementation("androidx.navigation:navigation-fragment:2.9.6")
 //    implementation("androidx.navigation:navigation-ui:2.9.6")
 
