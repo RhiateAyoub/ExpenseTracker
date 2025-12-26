@@ -255,6 +255,12 @@ public interface ExpenseDao {
     @Query("DELETE FROM expenses WHERE user_id = :userId AND category = :category")
     void deleteExpensesByCategory(int userId, String category);
 
+    @Query("SELECT * FROM expenses WHERE is_synced = 0")
+    List<Expense> getUnsyncedExpenses();
+
+    @Update
+    void updateExpenses(List<Expense> expenses);
+
     // ==================== HELPER CLASS ====================
 
     /**

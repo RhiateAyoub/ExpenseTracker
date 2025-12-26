@@ -80,6 +80,9 @@ public class Expense {
     @ColumnInfo(name = "created_at")
     private long createdAt;
 
+    @ColumnInfo(name = "is_synced", defaultValue = "0")
+    private boolean isSynced;
+
     // ==================== CONSTRUCTORS ====================
 
     public Expense() {
@@ -158,6 +161,14 @@ public class Expense {
 
     public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public boolean isSynced() {
+        return isSynced;
+    }
+
+    public void setSynced(boolean synced) {
+        isSynced = synced;
     }
 
     // ==================== HELPER METHODS ====================

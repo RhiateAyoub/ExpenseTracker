@@ -4,6 +4,7 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.expensetracker.MainApplication;
 import com.example.expensetracker.data.dao.ExpenseDao;
 import com.example.expensetracker.data.database.AppDatabase;
 import com.example.expensetracker.data.entity.Expense;
@@ -18,8 +19,10 @@ public class ExpenseRepository {
 
     private final ExpenseDao expenseDao;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Application application; // 1. AJOUTER CETTE LIGNE
 
     public ExpenseRepository(Application application) {
+        this.application = application; // 2. INITIALISER LA VARIABLE
         AppDatabase db = AppDatabase.getInstance(application);
         expenseDao = db.expenseDao();
     }
@@ -27,15 +30,27 @@ public class ExpenseRepository {
     // ==================== INSERT ====================
 
     public void insert(Expense expense) {
-        executor.execute(() -> expenseDao.insert(expense));
+        executor.execute(() -> {
+            expenseDao.insert(expense);
+            // 3. UTILISER LA BONNE VARIABLE DE CONTEXTE
+            MainApplication.scheduleSyncWorker(application);
+        });
     }
 
     public void update(Expense expense) {
-        executor.execute(() -> expenseDao.update(expense));
+        executor.execute(() -> {
+            expenseDao.update(expense);
+            // APPELER AUSSI LA SYNCHRO LORS DE LA MISE À JOUR
+            MainApplication.scheduleSyncWorker(application);
+        });
     }
 
     public void delete(Expense expense) {
-        executor.execute(() -> expenseDao.delete(expense));
+        executor.execute(() -> {
+            expenseDao.delete(expense);
+            // IDÉALEMENT, IL FAUDRAIT GÉRER LA SUPPRESSION SUR FIREBASE AUSSI.
+            // Pour l'instant, on ne fait rien pour garder les choses simples.
+        });
     }
 
     public LiveData<Expense> getExpenseById(int id) {
@@ -77,6 +92,18 @@ public class ExpenseRepository {
         return expenseDao.getTotalExpensesForPeriod(userId, startOfMonth, endOfMonth);
     }
 
+    public List<Expense> getUnsyncedExpenses() {
+        return expenseDao.getUnsyncedExpenses();
+    }
+
+    public void markExpensesAsSynced(List<Expense> expenses) {
+        executor.execute(() -> {
+            for (Expense expense : expenses) {
+                expense.setSynced(true);
+            }
+            expenseDao.updateExpenses(expenses);
+        });
+    }
 
     // ==================== DATE UTILS ====================
 

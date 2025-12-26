@@ -172,4 +172,10 @@ public interface BudgetDao {
      */
     @Query("SELECT COUNT(*) FROM budgets WHERE user_id = :userId")
     int getBudgetCountForUser(int userId);
+
+    @Query("SELECT * FROM budgets WHERE is_synced = 0")
+    List<Budget> getUnsyncedBudgets();
+
+    @Update
+    void updateBudgets(List<Budget> budgets);
 }

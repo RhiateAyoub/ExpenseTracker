@@ -2,6 +2,8 @@ package com.example.expensetracker.data.repository;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
+
+import com.example.expensetracker.MainApplication;
 import com.example.expensetracker.data.dao.BudgetDao;
 import com.example.expensetracker.data.database.AppDatabase;
 import com.example.expensetracker.data.entity.Budget;
@@ -14,8 +16,10 @@ public class BudgetRepository {
 
     private final BudgetDao budgetDao;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Application application; // AJOUTER
 
     public BudgetRepository(Application application) {
+        this.application = application; // AJOUTER
         AppDatabase db = AppDatabase.getInstance(application);
         budgetDao = db.budgetDao();
     }
@@ -45,18 +49,23 @@ public class BudgetRepository {
      */
     public void saveBudget(Budget budget) {
         executor.execute(() -> {
-            Budget existingBudget = budgetDao.getBudgetForMonth(
-                    budget.getUserId(),
-                    budget.getYear(),
-                    budget.getMonth()
-            );
+            budget.setSynced(false); // Marquer comme non synchronisé
+            long id = budgetDao.insert(budget); // insert gère déjà insert/update grâce à onConflict=REPLACE
+            MainApplication.scheduleSyncWorker(application); // Planifier la synchro
+        });
+    }
 
-            if (existingBudget == null) {
-                budgetDao.insert(budget);
-            } else {
-                existingBudget.setAmount(budget.getAmount());
-                budgetDao.update(existingBudget);
+    // AJOUTER CES DEUX MÉTHODES
+    public List<Budget> getUnsyncedBudgets() {
+        return budgetDao.getUnsyncedBudgets();
+    }
+
+    public void markBudgetsAsSynced(List<Budget> budgets) {
+        executor.execute(() -> {
+            for (Budget budget : budgets) {
+                budget.setSynced(true);
             }
+            budgetDao.updateBudgets(budgets);
         });
     }
 
