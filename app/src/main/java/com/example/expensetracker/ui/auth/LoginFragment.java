@@ -68,8 +68,13 @@ public class LoginFragment extends Fragment {
         // ==================== OBSERVERS ====================
         viewModel.authSuccess.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
-                // Create session
-                sessionManager.createLoginSession(user.getId(), user.getUsername(), user.getFullName());
+                // Create session with Firebase UID
+                sessionManager.createLoginSession(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getFullName(),
+                        user.getFirebaseUid()
+                );
 
                 // Navigate to home and clear the back stack
                 NavHostFragment.findNavController(this)

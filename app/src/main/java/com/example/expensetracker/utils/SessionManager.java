@@ -32,6 +32,7 @@ public class SessionManager {
     private static final String KEY_USER_ID = "userId";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_FULL_NAME = "fullName";
+    private static final String KEY_FIREBASE_UID = "firebaseUid";
 
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
@@ -64,12 +65,13 @@ public class SessionManager {
      * Usage:
      * session.createLoginSession(user.getId(), user.getUsername(), user.getFullName());
      */
-    public void createLoginSession(int userId, String username, String fullName) {
+    public void createLoginSession(int userId, String username, String fullName, String firebaseUid) {
         editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.putInt(KEY_USER_ID, userId);
         editor.putString(KEY_USERNAME, username);
         editor.putString(KEY_FULL_NAME, fullName);
-        editor.apply(); // Save changes
+        editor.putString(KEY_FIREBASE_UID, firebaseUid);
+        editor.apply();
     }
 
     /**
@@ -134,6 +136,15 @@ public class SessionManager {
      */
     public String getFullName() {
         return prefs.getString(KEY_FULL_NAME, null);
+    }
+
+    /**
+     * Get logged-in user's Firebase UID
+     *
+     * @return - Firebase UID, or null if not set
+     */
+    public String getFirebaseUid() {
+        return prefs.getString(KEY_FIREBASE_UID, null);
     }
 
     /**

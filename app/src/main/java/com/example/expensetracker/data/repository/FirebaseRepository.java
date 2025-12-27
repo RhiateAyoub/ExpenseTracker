@@ -1,17 +1,25 @@
 package com.example.expensetracker.data.repository;
 
+import android.util.Log;
+
 import com.example.expensetracker.data.entity.Budget;
+import com.example.expensetracker.data.entity.Expense;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
-import com.example.expensetracker.data.entity.Expense;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FirebaseRepository {
 
+    private static final String TAG = "FirebaseRepository";
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+    // ==================== EXPENSE SYNC ====================
 
     public interface SyncCallback {
         void onSuccess(List<Expense> syncedExpenses);
@@ -20,50 +28,104 @@ public class FirebaseRepository {
 
     public void syncExpenses(List<Expense> expenses, SyncCallback callback) {
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null || expenses == null || expenses.isEmpty()) {
-            if (user == null) callback.onError(new Exception("Utilisateur non connecté"));
+
+        if (user == null) {
+            callback.onError(new Exception("Utilisateur non connecté"));
             return;
         }
 
-        // Utiliser un "batch write" pour envoyer toutes les modifications en une seule fois
+        if (expenses == null || expenses.isEmpty()) {
+            callback.onSuccess(expenses);
+            return;
+        }
+
+        String firebaseUid = user.getUid();
         WriteBatch batch = db.batch();
-        String userId = user.getUid();
 
         for (Expense expense : expenses) {
-            // Crée une nouvelle référence de document dans la sous-collection "expenses" de l'utilisateur
-            batch.set(db.collection("users").document(userId).collection("expenses").document(), expense);
+            // Create a map to store expense data
+            Map<String, Object> expenseData = new HashMap<>();
+            expenseData.put("amount", expense.getAmount());
+            expenseData.put("category", expense.getCategory());
+            expenseData.put("date", expense.getDate());
+            expenseData.put("note", expense.getNote());
+            expenseData.put("createdAt", expense.getCreatedAt());
+            expenseData.put("userId", expense.getUserId());
+
+            // Store in: users/{firebaseUid}/expenses/{expenseId}
+            batch.set(
+                    db.collection("users")
+                            .document(firebaseUid)
+                            .collection("expenses")
+                            .document(String.valueOf(expense.getId())),
+                    expenseData
+            );
         }
 
         batch.commit()
-                .addOnSuccessListener(aVoid -> callback.onSuccess(expenses))
-                .addOnFailureListener(e -> callback.onError(e));
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Expenses synced successfully");
+                    callback.onSuccess(expenses);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to sync expenses: " + e.getMessage());
+                    callback.onError(e);
+                });
     }
 
-    // Interface pour le callback des budgets
+    // ==================== BUDGET SYNC ====================
+
     public interface SyncBudgetCallback {
         void onSuccess(List<Budget> syncedBudgets);
         void onError(Exception e);
     }
 
-    // NOUVELLE MÉTHODE POUR SYNCHRONISER LES BUDGETS
     public void syncBudgets(List<Budget> budgets, SyncBudgetCallback callback) {
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null || budgets == null || budgets.isEmpty()) {
-            if (user == null) callback.onError(new Exception("Utilisateur non connecté"));
+
+        if (user == null) {
+            callback.onError(new Exception("Utilisateur non connecté"));
             return;
         }
 
-        com.google.firebase.firestore.WriteBatch batch = db.batch();
-        String userId = user.getUid();
+        if (budgets == null || budgets.isEmpty()) {
+            callback.onSuccess(budgets);
+            return;
+        }
+
+        String firebaseUid = user.getUid();
+        WriteBatch batch = db.batch();
 
         for (Budget budget : budgets) {
-            // Le document ID sera "année-mois", ex: "2025-10" pour assurer l'unicité
+            // Create a map to store budget data
+            Map<String, Object> budgetData = new HashMap<>();
+            budgetData.put("amount", budget.getAmount());
+            budgetData.put("year", budget.getYear());
+            budgetData.put("month", budget.getMonth());
+            budgetData.put("createdAt", budget.getCreatedAt());
+            budgetData.put("userId", budget.getUserId());
+
+            // Use "year-month" as document ID for uniqueness
             String documentId = budget.getYear() + "-" + budget.getMonth();
-            batch.set(db.collection("users").document(userId).collection("budgets").document(documentId), budget);
+
+            // Store in: users/{firebaseUid}/budgets/{year-month}
+            batch.set(
+                    db.collection("users")
+                            .document(firebaseUid)
+                            .collection("budgets")
+                            .document(documentId),
+                    budgetData
+            );
         }
 
         batch.commit()
-                .addOnSuccessListener(aVoid -> callback.onSuccess(budgets))
-                .addOnFailureListener(e -> callback.onError(e));
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Budgets synced successfully");
+                    callback.onSuccess(budgets);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to sync budgets: " + e.getMessage());
+                    callback.onError(e);
+                });
     }
 }
