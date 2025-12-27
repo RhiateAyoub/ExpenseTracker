@@ -128,4 +128,80 @@ public class FirebaseRepository {
                     callback.onError(e);
                 });
     }
+
+    // ==================== DATA DOWNLOAD (for cross-device sync) ====================
+
+    public interface DownloadExpensesCallback {
+        void onSuccess(List<Map<String, Object>> expenses);
+        void onError(Exception e);
+    }
+
+    public interface DownloadBudgetsCallback {
+        void onSuccess(List<Map<String, Object>> budgets);
+        void onError(Exception e);
+    }
+
+    /**
+     * Download all expenses from Firestore for the current user
+     */
+    public void downloadExpenses(DownloadExpensesCallback callback) {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user == null) {
+            callback.onError(new Exception("Utilisateur non connecté"));
+            return;
+        }
+
+        String firebaseUid = user.getUid();
+
+        db.collection("users")
+                .document(firebaseUid)
+                .collection("expenses")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Map<String, Object>> expensesList = new java.util.ArrayList<>();
+                    querySnapshot.forEach(document -> {
+                        Map<String, Object> expenseData = document.getData();
+                        expensesList.add(expenseData);
+                    });
+                    Log.d(TAG, "Downloaded " + expensesList.size() + " expenses from Firestore");
+                    callback.onSuccess(expensesList);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to download expenses: " + e.getMessage());
+                    callback.onError(e);
+                });
+    }
+
+    /**
+     * Download all budgets from Firestore for the current user
+     */
+    public void downloadBudgets(DownloadBudgetsCallback callback) {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user == null) {
+            callback.onError(new Exception("Utilisateur non connecté"));
+            return;
+        }
+
+        String firebaseUid = user.getUid();
+
+        db.collection("users")
+                .document(firebaseUid)
+                .collection("budgets")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Map<String, Object>> budgetsList = new java.util.ArrayList<>();
+                    querySnapshot.forEach(document -> {
+                        Map<String, Object> budgetData = document.getData();
+                        budgetsList.add(budgetData);
+                    });
+                    Log.d(TAG, "Downloaded " + budgetsList.size() + " budgets from Firestore");
+                    callback.onSuccess(budgetsList);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to download budgets: " + e.getMessage());
+                    callback.onError(e);
+                });
+    }
 }

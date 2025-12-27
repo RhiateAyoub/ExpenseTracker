@@ -37,6 +37,19 @@ public class ExpenseRepository {
         });
     }
 
+    /**
+     * Insert expenses downloaded from Firebase (skip if already exists)
+     */
+    public void insertFromFirebase(List<Expense> expenses) {
+        executor.execute(() -> {
+            for (Expense expense : expenses) {
+                // Mark as already synced since it came from Firebase
+                expense.setSynced(true);
+                expenseDao.insert(expense);
+            }
+        });
+    }
+
     public void update(Expense expense) {
         executor.execute(() -> {
             expenseDao.update(expense);

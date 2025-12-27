@@ -55,6 +55,19 @@ public class BudgetRepository {
         });
     }
 
+    /**
+     * Insert budgets downloaded from Firebase (skip if already exists)
+     */
+    public void insertFromFirebase(List<Budget> budgets) {
+        executor.execute(() -> {
+            for (Budget budget : budgets) {
+                // Mark as already synced since it came from Firebase
+                budget.setSynced(true);
+                budgetDao.insert(budget);
+            }
+        });
+    }
+
     // AJOUTER CES DEUX MÉTHODES
     public List<Budget> getUnsyncedBudgets() {
         return budgetDao.getUnsyncedBudgets();
