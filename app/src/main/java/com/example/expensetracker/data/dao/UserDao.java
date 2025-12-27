@@ -177,4 +177,18 @@ public interface UserDao {
     // Ajoutez une vérification pour l'inscription (pour éviter les doublons d'email)
     @Query("SELECT COUNT(*) FROM users WHERE email = :email")
     int checkEmailExists(String email);
+
+    /**
+     * Update Firebase UID for a user
+     * Called after Firebase authentication succeeds
+     */
+    @Query("UPDATE users SET firebase_uid = :firebaseUid WHERE id = :userId")
+    void setFirebaseUid(int userId, String firebaseUid);
+
+    /**
+     * Get user by Firebase UID
+     * Used for cross-device sync
+     */
+    @Query("SELECT * FROM users WHERE firebase_uid = :firebaseUid LIMIT 1")
+    User getUserByFirebaseUid(String firebaseUid);
 }

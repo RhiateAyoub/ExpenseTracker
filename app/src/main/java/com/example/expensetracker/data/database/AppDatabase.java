@@ -29,7 +29,7 @@ import com.example.expensetracker.data.entity.User;
 
 @Database(
         entities = {User.class, Budget.class, Expense.class},
-        version = 2, // version 2 ICI
+        version = 3,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -89,7 +89,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     DATABASE_NAME
                             )
                             // IMPORTANT: Remove these before production!
-                            // .fallbackToDestructiveMigration()  // Deletes old database if schema changes
+                            .fallbackToDestructiveMigration()  // Deletes old database if schema changes
                             // .allowMainThreadQueries()          // Allows queries on main thread (BAD for production!)
                             .build();
                 }

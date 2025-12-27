@@ -6,6 +6,9 @@ import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import com.example.expensetracker.data.database.AppDatabase;
 import com.example.expensetracker.data.dao.UserDao;
 import com.example.expensetracker.data.entity.User;
@@ -36,6 +39,7 @@ public class UserRepository {
 
     private UserDao userDao;
     private ExecutorService executorService;
+    private FirebaseAuth firebaseAuth;
 
     /**
      * Constructor
@@ -46,6 +50,7 @@ public class UserRepository {
         AppDatabase db = AppDatabase.getInstance(context);
         userDao = db.userDao();
         executorService = Executors.newSingleThreadExecutor();
+        firebaseAuth = FirebaseAuth.getInstance();
     }
 
     // ==================== AUTHENTICATION ====================
@@ -77,33 +82,55 @@ public class UserRepository {
      *     }
      * });
      */
-    public void register(String username, String password, String fullName, String Email, RegisterCallback callback) {
+    public void register(String username, String password, String fullName, String email, RegisterCallback callback) {
         executorService.execute(() -> {
             try {
-                // 1. Vérifier si le username existe déjà
+                // 1. Check if username exists
                 if (userDao.checkUsernameExists(username) > 0) {
                     callback.onError("Ce nom d'utilisateur existe déjà");
                     return;
                 }
 
-                // 2. AJOUTÉ : Vérifier si l'email existe déjà (Important !)
-                if (userDao.checkEmailExists(Email) > 0) {
+                // 2. Check if email exists
+                if (userDao.checkEmailExists(email) > 0) {
                     callback.onError("Cet email est déjà utilisé");
                     return;
                 }
 
-                // Hash password
+                // 3. Hash password for local storage
                 String hashedPassword = PasswordUtil.hashPassword(password);
 
-                // 3. CORRIGÉ : Ajout du paramètre 'Email' dans le constructeur User
-                // Assurez-vous que votre User.java a bien ce constructeur !
-                User user = new User(username, hashedPassword, fullName, Email, System.currentTimeMillis());
-
+                // 4. Create LOCAL user first
+                User user = new User(username, hashedPassword, fullName, email, System.currentTimeMillis());
                 long userId = userDao.insert(user);
 
                 if (userId > 0) {
-                    User newUser = userDao.getUserById((int) userId);
-                    callback.onSuccess(newUser);
+                    user.setId((int) userId);
+
+                    // 5. Create Firebase user IN PARALLEL
+                    firebaseAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnSuccessListener(authResult -> {
+                                // Firebase account created successfully
+                                FirebaseUser firebaseUser = authResult.getUser();
+                                if (firebaseUser != null) {
+                                    String firebaseUid = firebaseUser.getUid();
+
+                                    // Store Firebase UID in Room database
+                                    executorService.execute(() -> {
+                                        userDao.setFirebaseUid((int) userId, firebaseUid);
+                                        user.setFirebaseUid(firebaseUid);
+                                        callback.onSuccess(user);
+                                    });
+                                } else {
+                                    // Firebase succeeded but no user returned (rare)
+                                    callback.onSuccess(user);
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                // Firebase registration failed, but local user exists
+                                // Allow user to login locally, sync will fail gracefully
+                                callback.onSuccess(user);
+                            });
                 } else {
                     callback.onError("Erreur lors de l'inscription");
                 }
@@ -142,21 +169,48 @@ public class UserRepository {
      */
     // AJOUT : On passe le callback en paramètre
     public void login(String identifier, String password, LoginCallback callback) {
-        // AJOUT : On enveloppe tout le code dans l'executorService pour passer en arrière-plan
         executorService.execute(() -> {
             try {
-                // Cette ligne causait le crash car elle accédait à la BD sur le main thread
+                // 1. Find user locally (by username or email)
                 User user = userDao.findUserForLogin(identifier);
 
-                if (user != null && BCrypt.checkpw(password, user.getPassword())) {
-                    // Succès
-                    callback.onSuccess(user);
-                } else {
-                    // Échec (mot de passe ou user incorrect)
+                if (user == null) {
                     callback.onError("Identifiant ou mot de passe incorrect");
+                    return;
                 }
+
+                // 2. Verify password locally
+                if (!BCrypt.checkpw(password, user.getPassword())) {
+                    callback.onError("Identifiant ou mot de passe incorrect");
+                    return;
+                }
+
+                // 3. Local authentication succeeded
+                // Now sign in to Firebase
+                firebaseAuth.signInWithEmailAndPassword(user.getEmail(), password)
+                        .addOnSuccessListener(authResult -> {
+                            // Firebase login successful
+                            FirebaseUser firebaseUser = authResult.getUser();
+                            if (firebaseUser != null) {
+                                String firebaseUid = firebaseUser.getUid();
+
+                                // Update Firebase UID if it's not stored yet
+                                if (user.getFirebaseUid() == null || user.getFirebaseUid().isEmpty()) {
+                                    executorService.execute(() -> {
+                                        userDao.setFirebaseUid(user.getId(), firebaseUid);
+                                        user.setFirebaseUid(firebaseUid);
+                                    });
+                                }
+                            }
+                            callback.onSuccess(user);
+                        })
+                        .addOnFailureListener(e -> {
+                            // Firebase login failed (offline or account doesn't exist)
+                            // But local login succeeded, so allow offline mode
+                            callback.onSuccess(user);
+                        });
+
             } catch (Exception e) {
-                // Gestion des erreurs imprévues
                 callback.onError("Erreur de connexion : " + e.getMessage());
             }
         });

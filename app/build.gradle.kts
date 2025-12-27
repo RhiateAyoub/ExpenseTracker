@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.android.navigation.safeargs)
-    id("com.android.application")
     id("com.google.gms.google-services")
 }
 
@@ -58,6 +57,7 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.splashscreen)
+    implementation(libs.guava)
     implementation("com.sun.mail:android-mail:1.6.7")
     implementation("com.sun.mail:android-activation:1.6.7")
 //    implementation("androidx.navigation:navigation-fragment:2.9.6")

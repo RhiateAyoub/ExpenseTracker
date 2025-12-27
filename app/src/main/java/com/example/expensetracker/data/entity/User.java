@@ -53,6 +53,9 @@ public class User {
 
     @ColumnInfo(name = "email")
     private String email;
+
+    @ColumnInfo(name = "firebase_uid")
+    private String firebaseUid;
     /**
      * Account creation timestamp
      * Stored as milliseconds since Unix epoch (January 1, 1970)
@@ -130,6 +133,13 @@ public class User {
     }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
+    }
     // ==================== HELPER METHODS ====================
     // Getter et Setter
     public boolean isVerified() { return isVerified; }
