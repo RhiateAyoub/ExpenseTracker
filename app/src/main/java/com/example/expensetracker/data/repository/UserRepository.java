@@ -4,6 +4,7 @@ package com.example.expensetracker.data.repository;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -16,10 +17,12 @@ import com.example.expensetracker.data.entity.User;
 import com.example.expensetracker.data.entity.Budget;
 import com.example.expensetracker.data.entity.Expense;
 import com.example.expensetracker.utils.PasswordUtil;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -117,17 +120,37 @@ public class UserRepository {
                     // 5. Create Firebase user IN PARALLEL
                     firebaseAuth.createUserWithEmailAndPassword(email, password)
                             .addOnSuccessListener(authResult -> {
-                                // Firebase account created successfully
                                 FirebaseUser firebaseUser = authResult.getUser();
                                 if (firebaseUser != null) {
                                     String firebaseUid = firebaseUser.getUid();
 
-                                    // Store Firebase UID in Room database
-                                    executorService.execute(() -> {
-                                        userDao.setFirebaseUid((int) userId, firebaseUid);
-                                        user.setFirebaseUid(firebaseUid);
-                                        callback.onSuccess(user);
-                                    });
+                                    // NEW: Store user profile in Firestore
+                                    Map<String, Object> userProfile = new HashMap<>();
+                                    userProfile.put("username", username);
+                                    userProfile.put("fullName", fullName);
+                                    userProfile.put("email", email);
+                                    userProfile.put("createdAt", System.currentTimeMillis());
+
+                                    FirebaseFirestore.getInstance()
+                                            .collection("users")
+                                            .document(firebaseUid)
+                                            .set(userProfile)
+                                            .addOnSuccessListener(aVoid -> {
+                                                // Profile stored successfully
+                                                executorService.execute(() -> {
+                                                    userDao.setFirebaseUid((int) userId, firebaseUid);
+                                                    user.setFirebaseUid(firebaseUid);
+                                                    callback.onSuccess(user);
+                                                });
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                // Profile storage failed, but still allow login
+                                                executorService.execute(() -> {
+                                                    userDao.setFirebaseUid((int) userId, firebaseUid);
+                                                    user.setFirebaseUid(firebaseUid);
+                                                    callback.onSuccess(user);
+                                                });
+                                            });
                                 } else {
                                     // Firebase succeeded but no user returned (rare)
                                     callback.onSuccess(user);
@@ -457,41 +480,102 @@ public class UserRepository {
                     FirebaseUser firebaseUser = authResult.getUser();
                     if (firebaseUser != null) {
                         String firebaseUid = firebaseUser.getUid();
-                        String displayName = firebaseUser.getDisplayName();
 
-                        // Create a temporary local user
-                        executorService.execute(() -> {
-                            try {
-                                // Hash the password for local storage
-                                String hashedPassword = PasswordUtil.hashPassword(password);
+                        // NEW: Retrieve user profile from Firestore
+                        FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(firebaseUid)
+                                .get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    executorService.execute(() -> {
+                                        try {
+                                            // Hash the password for local storage
+                                            String hashedPassword = PasswordUtil.hashPassword(password);
 
-                                // Extract username from email (part before @)
-                                String username = email.split("@")[0];
+                                            // Get user data from Firestore
+                                            String username;
+                                            String fullName;
 
-                                // Create local user
-                                User user = new User(
-                                        username,
-                                        hashedPassword,
-                                        displayName != null ? displayName : username,
-                                        email,
-                                        System.currentTimeMillis()
-                                );
+                                            if (documentSnapshot.exists()) {
+                                                // User profile exists in Firestore
+                                                username = documentSnapshot.getString("username");
+                                                fullName = documentSnapshot.getString("fullName");
 
-                                long userId = userDao.insert(user);
-                                user.setId((int) userId);
+                                                // DEBUG LOGS
+                                                Log.d("UserRepository", "Firestore profile found!");
+                                                Log.d("UserRepository", "Username from Firestore: " + username);
+                                                Log.d("UserRepository", "FullName from Firestore: " + fullName);
 
-                                // Store Firebase UID
-                                userDao.setFirebaseUid((int) userId, firebaseUid);
-                                user.setFirebaseUid(firebaseUid);
+                                                // Fallback if data is missing
+                                                if (username == null || username.isEmpty()) {
+                                                    username = email.split("@")[0];
+                                                    Log.d("UserRepository", "Username was null, using: " + username);
+                                                }
+                                                if (fullName == null || fullName.isEmpty()) {
+                                                    fullName = username;
+                                                    Log.d("UserRepository", "FullName was null, using: " + fullName);
+                                                }
+                                            } else {
+                                                // DEBUG LOG
+                                                Log.w("UserRepository", "Firestore profile NOT found! Using email fallback.");
+                                                username = email.split("@")[0];
+                                                fullName = username;
+                                            }
 
-                                // Download user's data from Firebase
-                                downloadUserDataFromFirebase(user, context);
+                                            // Create local user
+                                            User user = new User(
+                                                    username,
+                                                    hashedPassword,
+                                                    fullName,
+                                                    email,
+                                                    System.currentTimeMillis()
+                                            );
 
-                                callback.onSuccess(user);
-                            } catch (Exception e) {
-                                callback.onError("Erreur lors de la création du compte local: " + e.getMessage());
-                            }
-                        });
+                                            long userId = userDao.insert(user);
+                                            user.setId((int) userId);
+
+                                            // Store Firebase UID
+                                            userDao.setFirebaseUid((int) userId, firebaseUid);
+                                            user.setFirebaseUid(firebaseUid);
+
+                                            // Download user's data from Firebase
+                                            downloadUserDataFromFirebase(user, context);
+
+                                            callback.onSuccess(user);
+                                        } catch (Exception e) {
+                                            callback.onError("Erreur lors de la création du compte local: " + e.getMessage());
+                                        }
+                                    });
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Firestore fetch failed, create user with basic info
+                                    executorService.execute(() -> {
+                                        try {
+                                            String hashedPassword = PasswordUtil.hashPassword(password);
+                                            String username = email.split("@")[0];
+
+                                            User user = new User(
+                                                    username,
+                                                    hashedPassword,
+                                                    username,
+                                                    email,
+                                                    System.currentTimeMillis()
+                                            );
+
+                                            long userId = userDao.insert(user);
+                                            user.setId((int) userId);
+
+                                            userDao.setFirebaseUid((int) userId, firebaseUid);
+                                            user.setFirebaseUid(firebaseUid);
+
+                                            downloadUserDataFromFirebase(user, context);
+
+                                            callback.onSuccess(user);
+                                        } catch (Exception ex) {
+                                            callback.onError("Erreur: " + ex.getMessage());
+                                        }
+                                    });
+                                });
                     } else {
                         callback.onError("Erreur d'authentification Firebase");
                     }
