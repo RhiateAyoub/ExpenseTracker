@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Expense Tracker</string>
+    <!-- AI Advisor -->
+    <string name="ai_advisor_title">AI Financial Advisor</string>
+    <string name="ai_advisor_subtitle">Get personalized tips powered by AI</string>
+    <string name="ai_advisor_empty_message">Tap the button below to get personalized financial advice based on your spending patterns</string>
+    <string name="ai_advisor_icon">AI Advisor Icon</string>
+    <string name="generate_advice">Get Financial Advice</string>
+    <string name="refresh_advice">Get Fresh Advice</string>
+    <string name="nav_advisor">Advisor</string>
 </resources>

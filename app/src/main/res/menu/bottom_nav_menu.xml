@@ -21,4 +21,9 @@
         android:icon="@drawable/ic_stats"
         android:title="Stats"/>
 
+    <item
+        android:id="@+id/navigation_advisor"
+        android:icon="@drawable/ic_advisor"
+        android:title="@string/nav_advisor" />
+
 </menu>

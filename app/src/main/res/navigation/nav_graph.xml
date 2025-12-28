@@ -1,6 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph.xml">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <!-- Add this Activity entry -->
+    <activity
+        android:id="@+id/splashActivity"
+        android:name="com.example.expensetracker.ui.auth.SplashActivity"
+        android:label="SplashActivity" />
+
+    <!-- ==================== AUTHENTICATION FRAGMENTS ==================== -->
+
+    <!-- Login Fragment -->
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.expensetracker.ui.auth.LoginFragment"
+        android:label="Connexion"
+        tools:layout="@layout/fragment_login">
+
+        <!-- Action to navigate from Login to Register -->
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <!-- Action to navigate from Login to Home (after successful login) -->
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Register Fragment -->
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.expensetracker.ui.auth.RegisterFragment"
+        android:label="Inscription"
+        tools:layout="@layout/fragment_register">
+
+        <!-- Action to navigate from Register back to Login (after successful registration) -->
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- ==================== MAIN APP FRAGMENTS ==================== -->
+    <action
+        android:id="@+id/action_global_to_loginFragment"
+        app:destination="@id/loginFragment"
+        app:popUpTo="@id/nav_graph"
+        app:popUpToInclusive="true" />
+
+    <!-- Home Fragment -->
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.expensetracker.ui.home.HomeFragment"
+        android:label="Accueil"
+        tools:layout="@layout/fragment_home">
+
+        <!-- Action to navigate to Add Expense -->
+        <action
+            android:id="@+id/action_home_to_addExpense"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Expenses Fragment -->
+    <fragment
+        android:id="@+id/expensesFragment"
+        android:name="com.example.expensetracker.ui.expenses.ExpenseFragment"
+        android:label="Dépenses"
+        tools:layout="@layout/fragment_expenses">
+
+        <!-- Action to navigate to Add Expense -->
+        <action
+            android:id="@+id/action_expenses_to_addExpense"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_expenses_to_editExpense"
+            app:destination="@id/editExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Budget Fragment -->
+    <fragment
+        android:id="@+id/budgetFragment"
+        android:name="com.example.expensetracker.ui.budget.BudgetFragment"
+        android:label="Budget"
+        tools:layout="@layout/fragment_budget">
+
+        <!-- Action to Monthly History -->
+        <action
+            android:id="@+id/action_budget_to_monthlyHistory"
+            app:destination="@id/monthlyHistoryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <!-- Action to navigate to Add Expense -->
+        <action
+            android:id="@+id/action_budget_to_addExpense"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Statistics Fragment -->
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.example.expensetracker.ui.statistics.StatisticsFragment"
+        android:label="Stats"
+        tools:layout="@layout/fragment_statistics">
+
+        <!-- Action to navigate to Add Expense -->
+        <action
+            android:id="@+id/action_statistics_to_addExpense"
+            app:destination="@id/addExpenseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- ==================== UTILITY FRAGMENTS ==================== -->
+
+    <!-- Add Expense Fragment -->
+    <fragment
+        android:id="@+id/addExpenseFragment"
+        android:name="com.example.expensetracker.ui.expenses.AddExpenseFragment"
+        android:label="Ajouter une dépense"
+        tools:layout="@layout/fragment_add_expense" />
+
+    <fragment
+        android:id="@+id/editExpenseFragment"
+        android:name="com.example.expensetracker.ui.expenses.EditExpenseFragment"
+        android:label="Modifier la dépense"
+        tools:layout="@layout/fragment_edit_expense">
+        <argument
+            android:name="expenseId"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Monthly History Fragment -->
+    <fragment
+        android:id="@+id/monthlyHistoryFragment"
+        android:name="com.example.expensetracker.ui.budget.MonthlyHistoryFragment"
+        android:label="Historique mensuel"
+        tools:layout="@layout/fragment_monthly_history" />
+
+    <fragment
+        android:id="@+id/navigation_advisor"
+        android:name="com.example.expensetracker.ui.advisor.FinancialAdvisorFragment"
+        android:label="@string/nav_advisor"
+        tools:layout="@layout/fragment_financial_advisor" />
 
 </navigation>

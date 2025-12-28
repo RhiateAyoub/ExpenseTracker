@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/color/text_input_box_stroke.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Focused/Active state - Green -->
+    <item android:color="@color/primary" android:state_focused="true"/>
+    <item android:color="@color/primary" android:state_hovered="true"/>
+
+    <!-- Error state - Red -->
+    <item android:color="@color/red_strong" android:state_enabled="false"/>
+
+    <!-- Default state - Gray -->
+    <item android:color="@color/line_gray"/>
+</selector>

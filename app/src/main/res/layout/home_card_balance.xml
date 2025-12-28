@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- home_card_balance.xml - FIXED -->
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_balance_wrapper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    android:elevation="2dp">
+
+    <LinearLayout
+        android:id="@+id/balanceCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/card_positive">
+
+        <TextView
+            android:id="@+id/tvLabelBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Solde prévu au fin du mois"
+            android:textSize="14sp"
+            android:fontFamily="@font/inter_medium"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvBalanceAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+200 MAD"
+            android:textSize="28sp"
+            android:fontFamily="@font/inter_semibold"
+            android:textColor="@color/primary_green"
+            android:layout_marginTop="6dp" />
+
+        <TextView
+            android:id="@+id/tvBalancePercentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+20% du budget mensuel"
+            android:textSize="13sp"
+            android:fontFamily="@font/inter_regular"
+            android:textColor="@color/primary_green"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+
+    <!--
+    IMPORTANT: In your Java/ViewModel code, you'll need to programmatically change:
+
+    For POSITIVE balance:
+    balanceCard.setBackgroundResource(R.drawable.card_positive);
+    tvBalanceAmount.setTextColor(getResources().getColor(R.color.primary_green));
+    tvBalancePercentage.setTextColor(getResources().getColor(R.color.primary_green));
+    positiveSection.setVisibility(View.VISIBLE);
+    negativeSection.setVisibility(View.GONE);
+
+    For NEGATIVE balance:
+    balanceCard.setBackgroundResource(R.drawable.card_negative);
+    tvBalanceAmount.setTextColor(getResources().getColor(R.color.red_strong));
+    tvBalancePercentage.setTextColor(getResources().getColor(R.color.red_strong));
+    positiveSection.setVisibility(View.GONE);
+    negativeSection.setVisibility(View.VISIBLE);
+    -->

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <!-- DATE HEADER (This section remains untouched and will work as before) -->
+    <LinearLayout
+        android:id="@+id/dateHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="12dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvExpenseDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="28 Novembre"
+            android:textSize="13sp"
+            android:fontFamily="@font/inter_regular"
+            android:textColor="@color/gray_dark"/>
+
+        <TextView
+            android:id="@+id/tvExpenseDayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Samedi"
+            android:textSize="16sp"
+            android:fontFamily="@font/inter_semibold"
+            android:textColor="@color/black"
+            android:layout_marginTop="2dp"/>
+
+        <!-- Divider line under date header -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line_gray"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+    <!-- This FrameLayout allows the actions to appear ON TOP of the expense item -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- ORIGINAL EXPENSE ITEM LAYOUT (This is your exact design) -->
+        <LinearLayout
+            android:id="@+id/contentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:background="?attr/selectableItemBackground">
+
+            <!-- Category Icon -->
+            <ImageView
+                android:id="@+id/ivCategoryIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_transport"
+                android:padding="8dp"
+                android:background="@drawable/icon_background"
+                app:tint="@color/black"/>
+
+            <!-- Category Name and Description -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:id="@+id/tvCategoryName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Transport"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/inter_medium"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:id="@+id/tvExpenseNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2x Taxi"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/inter_regular"
+                    android:textColor="@color/gray_dark"
+                    android:layout_marginTop="2dp"/>
+            </LinearLayout>
+
+            <!-- Amount -->
+            <TextView
+                android:id="@+id/tvExpenseAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-16 MAD"
+                android:textSize="16sp"
+                android:fontFamily="@font/inter_semibold"
+                android:textColor="@color/black"
+                android:layout_marginStart="12dp"/>
+        </LinearLayout>
+
+        <!-- HIDDEN ACTIONS VIEW (This appears on top on long-press) -->
+        <LinearLayout
+            android:id="@+id/actionsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="end|center_vertical"
+            android:background="@color/white"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:visibility="gone">
+
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:src="@drawable/ic_delete"
+                android:background="@drawable/bg_delete_button"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginEnd="12dp"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="Supprimer"/>
+
+            <ImageButton
+                android:id="@+id/btnModify"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:src="@drawable/ic_modify"
+                android:background="@drawable/bg_modify_button"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="Modifier"/>
+        </LinearLayout>
+
+    </FrameLayout>
+
+</LinearLayout>
