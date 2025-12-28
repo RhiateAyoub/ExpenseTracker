@@ -261,6 +261,13 @@ public interface ExpenseDao {
     @Update
     void updateExpenses(List<Expense> expenses);
 
+    /**
+     * Check if expense exists by user ID and creation timestamp
+     * (Used to prevent duplicate downloads from Firebase)
+     */
+    @Query("SELECT COUNT(*) FROM expenses WHERE user_id = :userId AND created_at = :createdAt")
+    int checkExpenseExists(int userId, long createdAt);
+
     // ==================== HELPER CLASS ====================
 
     /**

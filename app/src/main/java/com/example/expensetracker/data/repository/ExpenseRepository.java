@@ -1,6 +1,7 @@
 package com.example.expensetracker.data.repository;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -40,12 +41,23 @@ public class ExpenseRepository {
     /**
      * Insert expenses downloaded from Firebase (skip if already exists)
      */
+    /**
+     * Insert expenses downloaded from Firebase (skip if already exists)
+     */
     public void insertFromFirebase(List<Expense> expenses) {
         executor.execute(() -> {
             for (Expense expense : expenses) {
-                // Mark as already synced since it came from Firebase
-                expense.setSynced(true);
-                expenseDao.insert(expense);
+                // Check if expense already exists before inserting
+                int count = expenseDao.checkExpenseExists(expense.getUserId(), expense.getCreatedAt());
+
+                if (count == 0) {
+                    // Expense doesn't exist, insert it
+                    expense.setSynced(true);
+                    expenseDao.insert(expense);
+                } else {
+                    // Expense already exists, skip
+                    Log.d("ExpenseRepository", "Skipping duplicate expense (createdAt: " + expense.getCreatedAt() + ")");
+                }
             }
         });
     }

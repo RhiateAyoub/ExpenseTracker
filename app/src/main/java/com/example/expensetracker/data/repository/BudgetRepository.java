@@ -1,6 +1,8 @@
 package com.example.expensetracker.data.repository;
 
 import android.app.Application;
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 
 import com.example.expensetracker.MainApplication;
@@ -58,12 +60,27 @@ public class BudgetRepository {
     /**
      * Insert budgets downloaded from Firebase (skip if already exists)
      */
+    /**
+     * Insert budgets downloaded from Firebase (skip if already exists)
+     */
     public void insertFromFirebase(List<Budget> budgets) {
         executor.execute(() -> {
             for (Budget budget : budgets) {
-                // Mark as already synced since it came from Firebase
-                budget.setSynced(true);
-                budgetDao.insert(budget);
+                // Check if budget already exists before inserting
+                int count = budgetDao.checkBudgetExistsForMonth(
+                        budget.getUserId(),
+                        budget.getYear(),
+                        budget.getMonth()
+                );
+
+                if (count == 0) {
+                    // Budget doesn't exist, insert it
+                    budget.setSynced(true);
+                    budgetDao.insert(budget);
+                } else {
+                    // Budget already exists, skip
+                    Log.d("BudgetRepository", "Skipping duplicate budget (" + budget.getYear() + "-" + budget.getMonth() + ")");
+                }
             }
         });
     }

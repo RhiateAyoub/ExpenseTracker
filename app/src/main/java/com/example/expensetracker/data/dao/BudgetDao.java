@@ -178,4 +178,11 @@ public interface BudgetDao {
 
     @Update
     void updateBudgets(List<Budget> budgets);
+
+    /**
+     * Check if budget exists for user, year, and month
+     * (Used to prevent duplicate downloads from Firebase)
+     */
+    @Query("SELECT COUNT(*) FROM budgets WHERE user_id = :userId AND year = :year AND month = :month")
+    int checkBudgetExistsForMonth(int userId, int year, int month);
 }
