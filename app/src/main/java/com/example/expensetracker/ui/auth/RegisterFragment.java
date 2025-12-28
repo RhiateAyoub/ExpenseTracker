@@ -1,8 +1,9 @@
 package com.example.expensetracker.ui.auth;
 
 import android.app.AlertDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,7 @@ public class RegisterFragment extends Fragment {
             );
         });
 
+        // Navigation vers Login
         tvSeConnecter.setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
         // OBSERVER : Code envoyé avec succès ? -> Afficher la popup
@@ -79,22 +81,49 @@ public class RegisterFragment extends Fragment {
 
     // Affiche la popup pour entrer le code
     private void showVerificationDialog() {
+        // 1. Créer le Builder
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Vérification Email");
-        builder.setMessage("Un code a été envoyé à " + etEmail.getText().toString() + "\nEntrez le code :");
 
-        final EditText input = new EditText(requireContext());
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        builder.setView(input);
+        // 2. Gonfler (Inflate) notre layout personnalisé
+        // Si cette ligne est rouge, c'est que le fichier XML manque (voir étape 2)
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_verification, null);
+        builder.setView(dialogView);
 
-        builder.setPositiveButton("Vérifier", (dialog, which) -> {
-            String code = input.getText().toString();
-            // On envoie le code au ViewModel pour vérification finale
-            viewModel.verifyCodeAndSave(code);
+        // 3. Initialiser les vues du dialog
+        TextView tvMessage = dialogView.findViewById(R.id.tvDialogMessage);
+        EditText etCode = dialogView.findViewById(R.id.etDialogCode);
+        Button btnVerify = dialogView.findViewById(R.id.btnDialogVerify);
+        Button btnCancel = dialogView.findViewById(R.id.btnDialogCancel);
+
+        // Mettre à jour le message avec l'email
+        tvMessage.setText("Un code de vérification a été envoyé à :\n" + etEmail.getText().toString());
+
+        // 4. Créer le dialog
+        AlertDialog dialog = builder.create();
+
+        // Fond transparent pour les coins arrondis
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        // 5. Gérer les clics
+        btnVerify.setOnClickListener(v -> {
+            String code = etCode.getText().toString().trim();
+            if (!code.isEmpty()) {
+                viewModel.verifyCodeAndSave(code);
+                dialog.dismiss(); // Fermer le dialog après vérification
+            } else {
+                Toast.makeText(requireContext(), "Veuillez entrer le code", Toast.LENGTH_SHORT).show();
+            }
         });
 
-        builder.setNegativeButton("Annuler", (dialog, which) -> dialog.cancel());
-        builder.setCancelable(false); // Empêche de fermer en cliquant à côté
-        builder.show();
+        // Gestion du bouton Annuler
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        // Empêche de fermer en cliquant à côté
+        dialog.setCancelable(false);
+
+        // Afficher le dialog
+        dialog.show();
     }
 }

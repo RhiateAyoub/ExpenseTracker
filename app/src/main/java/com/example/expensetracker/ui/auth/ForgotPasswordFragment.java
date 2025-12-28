@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,7 +27,7 @@ public class ForgotPasswordFragment extends Fragment {
     private LinearLayout layoutEmail, layoutCode, layoutNewPassword;
     private EditText etEmail, etCode, etNewPass, etConfirmNewPass;
     private Button btnSendCode, btnVerifyCode, btnResetPassword;
-
+    private TextView tvBackToLogin;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,10 +48,14 @@ public class ForgotPasswordFragment extends Fragment {
         btnSendCode = view.findViewById(R.id.btnSendCode);
         btnVerifyCode = view.findViewById(R.id.btnVerifyCode);
         btnResetPassword = view.findViewById(R.id.btnResetPassword);
-
+        // . Initialiser le TextView de retour
+        tvBackToLogin = view.findViewById(R.id.tvBackToLogin);
         // État initial : Afficher seulement l'email
         showStep(1);
-
+        // Ajouter le listener pour retourner au login
+        tvBackToLogin.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigateUp();
+        });
         // 1. Envoyer le code
         btnSendCode.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
